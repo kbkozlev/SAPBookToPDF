@@ -2,7 +2,7 @@ from PIL import Image
 import os
 
 
-def crop_images(input_folder) -> bool | None:
+def crop_images() -> bool | None:
     """
     Crops images from the input folder based on coordinates and saves cropped images to the output folder.
 
@@ -13,11 +13,12 @@ def crop_images(input_folder) -> bool | None:
     coordinates = (463, 282, 2471, 3182)
 
     # Create output folder if it doesn't exist
-    output_folder = 'src/croppedPictures'
+    output_folder = 'files/croppedPictures'
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
     # Get a list of files in the folder and sort them numerically
+    input_folder = 'src/rawPictures'
     files = os.listdir(input_folder)
     files.sort(key=lambda x: int(os.path.splitext(x)[0]))
 

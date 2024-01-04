@@ -20,7 +20,7 @@ def capture_book_pages(book_url: str) -> bool | None:
     :return:
     """
 
-    directory = 'src/rawPictures'
+    directory = 'files/rawPictures'
     if not os.path.exists(directory):
         os.makedirs(directory)
 
