@@ -10,4 +10,4 @@ if __name__ == '__main__':
         crop_success = crop_images(input_folder='src/rawPictures')
 
         if crop_success:
-            compress_folder_to_7z(folder_path='src/croppedPictures', output_name='croppedPictures_backup')
+            compress_folder_to_7z(input_folder='src/croppedPictures', output_name='croppedPictures_backup')

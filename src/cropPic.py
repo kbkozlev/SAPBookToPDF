@@ -21,21 +21,25 @@ def crop_images(input_folder) -> bool | None:
     files = os.listdir(input_folder)
     files.sort(key=lambda x: int(os.path.splitext(x)[0]))
 
-    for filename in files:
-        try:
-            if filename.endswith(('.png', '.jpg', '.jpeg')):  # Process only image files
-                input_image_path = os.path.join(input_folder, filename)
-                output_image_path = os.path.join(output_folder, filename)
+    if len(files) > 0:
+        for filename in files:
+            try:
+                if filename.endswith(('.png', '.jpg', '.jpeg')):  # Process only image files
+                    input_image_path = os.path.join(input_folder, filename)
+                    output_image_path = os.path.join(output_folder, filename)
 
-                image = Image.open(input_image_path)
-                cropped_image = image.crop(coordinates)
-                cropped_image.save(output_image_path)
+                    image = Image.open(input_image_path)
+                    cropped_image = image.crop(coordinates)
+                    cropped_image.save(output_image_path)
 
-                print(f"Image {filename} has been cropped.")
+                    print(f"Image {filename} has been cropped.")
 
-        except Exception as e:
-            print(f"Error: {e}")
-            return False
+            except Exception as e:
+                print(f"Error: {e}")
+                return False
 
-    print(f"All pictures have been cropped and saved to folder {output_folder}.")
-    return True
+        print(f"All pictures have been cropped and saved to folder {output_folder}.")
+        return True
+    else:
+        print(f"No Files in {input_folder}")
+        return False
