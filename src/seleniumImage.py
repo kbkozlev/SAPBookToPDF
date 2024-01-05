@@ -47,7 +47,7 @@ def get_book_pages(driver, book_url, directory, page_nr=1, max_attempts=3) -> bo
 
     response = requests.get(book_url)
     if response.status_code == 200:
-        print('Navigating to Book.')
+        print('Navigating to book...')
         driver.get(book_url)
     else:
         print(f"Failed to load the book page. Received status code: {response.status_code}")
