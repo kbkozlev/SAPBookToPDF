@@ -99,7 +99,7 @@ def get_book_pages(driver, book_url, output_directory, page_nr=1, max_attempts=3
     except NoSuchElementException:
         if max_attempts > 0:
             print("Element not found. Retrying...")
-            return get_book_pages(driver, book_url, page_nr, max_attempts - 1)
+            return get_book_pages(driver=driver, book_url=book_url, output_directory=output_directory, page_nr=page_nr, max_attempts=max_attempts - 1)
         else:
             print("Max attempts reached. Exiting.")
             driver.quit()
