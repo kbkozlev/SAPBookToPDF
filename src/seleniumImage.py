@@ -30,6 +30,7 @@ def capture_book_pages(e_mail: str, passwd: str, book_url: str) -> bool:
         login_button.click()
         print("Logging in...")
 
+        # waits for the 'login failed' page to appear, if it doesn't, raises the TimeoutException and continues
         try:
             WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//*[@id="login-input"]/div[1]')))
             raise LoginFailedError()
@@ -99,4 +100,3 @@ def get_book_pages(driver, book_url, directory, page_nr=1, max_attempts=3) -> bo
         print(f"Error: {e}")
         driver.quit()
         return False
-
