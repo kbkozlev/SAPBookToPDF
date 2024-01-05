@@ -14,9 +14,9 @@ def process_book_images(e_mail: str, passwd: str, book_url: str, backup_name: st
     steps = [
         ("Capturing book pages", lambda: capture_book_pages(e_mail, passwd, book_url)),
         ("Cropping images", lambda: crop_images(output_folder)),
-        ("Creating backup", lambda: create_backup(output_folder, backup_name)),
         ("Sharpening images", lambda: sharpen_images_in_folder(output_folder)),
         ("Compressing images", lambda: compress_images(output_folder)),
+        ("Creating backup", lambda: create_backup(output_folder, backup_name)),
     ]
 
     for step_name, step_function in steps:

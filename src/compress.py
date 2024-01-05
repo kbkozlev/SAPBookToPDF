@@ -23,7 +23,7 @@ def compress_images(input_folder) -> tuple[bool, str] | tuple[bool, None]:
             else:
                 print(f"Image '{filename}' compressed.")
 
-        print(f'All pictures have been processed and saved to folder {output_folder}')
+        print(f'All pictures have been compressed and saved to folder {output_folder}')
         return True, output_folder
 
     except Exception as e:
