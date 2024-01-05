@@ -1,50 +1,38 @@
+import os
+from send2trash import send2trash
 from src.cropPic import crop_images
 from src.zip_backup import create_backup
 from src.seleniumImage import capture_book_pages
 from src.sharpen import sharpen_images_in_folder
-from src.compress import compress_png_folder
-from src.helper.credentials import create_cred_file, get_credentials
-import os
-from send2trash import send2trash
+from src.compress import compress_images
+from src.helper.credentials import create_ini_file, get_credentials, get_book
 
 
 def process_book_images(e_mail: str, passwd: str, book_url: str, backup_name: str) -> bool:
+    output_folder = ''
 
-    # Step 1: Capture book pages
-    capture_success, cap_out_dir = capture_book_pages(e_mail, passwd, book_url)
-    if not capture_success:
-        print("Step 1 (Capturing book pages): Failed")
-        return False
+    steps = [
+        ("Capturing book pages", lambda: capture_book_pages(e_mail, passwd, book_url)),
+        ("Cropping images", lambda: crop_images(output_folder)),
+        ("Creating backup", lambda: create_backup(output_folder, backup_name)),
+        ("Sharpening images", lambda: sharpen_images_in_folder(output_folder)),
+        ("Compressing images", lambda: compress_images(output_folder)),
+    ]
 
-    # Step 2: Crop images
-    crop_success, crop_out_dir = crop_images(input_folder=cap_out_dir)
-    if not crop_success:
-        print("Step 2 (Cropping images): Failed")
-        return False
+    for step_name, step_function in steps:
+        success, output_folder = step_function()
+        if not success:
+            print(f"Step '{step_name}': Failed")
+            return False
 
-    # Step 3: Create backup
-    backup_success = create_backup(input_folder=crop_out_dir, out_name=backup_name)
-    if not backup_success:
-        print("Step 3 (Creating backup): Failed")
-        return False
-
-    # Step 4: Sharpen images
-    sharpen_success, sharp_out_dir = sharpen_images_in_folder(input_folder=crop_out_dir)
-    if not sharpen_success:
-        print("Step 4 (Sharpening images): Failed")
-        return False
-
-    # Step 5: Compress images
-    compress_png_folder(input_folder=sharp_out_dir)
     print("All steps completed successfully!")
     return True
 
 
-if process_book_images:
+def remove_directories():
     for dir_entry in os.listdir('files'):
         dir_full_path = os.path.join('files', dir_entry)
 
-        # Check if it's a directory and not the exception directory
         if os.path.isdir(dir_full_path) and dir_entry != 'finalPictures':
             try:
                 send2trash(dir_full_path)
@@ -54,8 +42,12 @@ if process_book_images:
 
 
 if __name__ == '__main__':
-    create_cred_file()
+    create_ini_file()
     email, password = get_credentials()
+    book = get_book()
+
     if email and password:
-        process_book_images(e_mail=email, passwd=password, book_url="https://library.sap-press.com/reader/main/rhes-g69t-27nu-b8xd/",
-                            backup_name='pictureBackup')
+        processing_successful = process_book_images(e_mail=email, passwd=password, book_url=book, backup_name='pictureBackup')
+
+        if processing_successful:
+            remove_directories()

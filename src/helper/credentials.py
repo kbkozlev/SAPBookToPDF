@@ -1,40 +1,57 @@
 import os
 import configparser
 
+file_path = 'src/helper/info.ini'
 
-def create_cred_file():
-    file_path = 'src/helper/credentials.ini'
+
+def create_ini_file():
     if not os.path.exists(file_path):
         config = configparser.ConfigParser()
         config['Credentials'] = {
-            'Email': "''",  # Empty string within single quotes
-            'Password': "''"  # Empty string within single quotes
+            'Email': '',
+            'Password': ''
+        }
+        config['Book'] = {
+            'Book ID': ''
         }
 
         with open(file_path, 'w') as configfile:
             config.write(configfile)
-            print("INI file with empty credentials created successfully.")
-            return False
+        print("INI file with empty credentials created successfully.")
+        return False
+    return True
 
 
 def get_credentials():
-    file_path = 'src/helper/credentials.ini'
     if os.path.exists(file_path):
         config = configparser.ConfigParser()
         config.read(file_path)
 
-        # Check if the 'Credentials' section exists in the INI file
-        if 'Credentials' in config:
-            credentials = config['Credentials']
-
-            # Fetch the email and password
+        credentials = config['Credentials'] if 'Credentials' in config else None
+        if credentials:
             email = credentials.get('Email')
             password = credentials.get('Password')
-
             return email, password
-        else:
-            print("No 'Credentials' section found in the INI file.")
-            return None, None
-    else:
-        print("INI file 'credentials.ini' does not exist.")
+
+        print("No 'Credentials' section found in the INI file.")
         return None, None
+
+    print("INI file 'info.ini' does not exist.")
+    return None, None
+
+
+def get_book():
+    if os.path.exists(file_path):
+        config = configparser.ConfigParser()
+        config.read(file_path)
+
+        book = config['Book'] if 'Book' in config else None
+        if book:
+            book_id = book.get('Book ID')
+            return book_id
+
+        print("No 'Book' section found in the INI file.")
+        return None
+
+    print("INI file 'info.ini' does not exist.")
+    return None

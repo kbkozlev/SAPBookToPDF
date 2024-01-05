@@ -4,7 +4,7 @@ import numpy as np
 import shutil
 
 
-def sharpen_images_in_folder(input_folder):
+def sharpen_images_in_folder(input_folder) -> bool | tuple[bool, str]:
     output_folder = 'files/sharpenedPictures'
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)

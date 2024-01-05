@@ -1,6 +1,6 @@
 import os
 import time
-from typing import Any
+import requests
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.common.by import By
@@ -43,10 +43,17 @@ def capture_book_pages(e_mail: str, passwd: str, book_url: str) -> bool:
         return False
 
 
-def get_book_pages(driver, book_url, directory, page_nr=1, max_attempts=3) -> tuple[bool, Any] | bool:
-    driver.get(book_url)
+def get_book_pages(driver, book_url, directory, page_nr=1, max_attempts=3) -> bool | tuple[bool, str]:
+
+    response = requests.get(book_url)
+    if response.status_code == 200:
+        print('Navigating to Book.')
+        driver.get(book_url)
+    else:
+        print(f"Failed to load the book page. Received status code: {response.status_code}")
 
     time.sleep(2)
+
     try:
         WebDriverWait(driver, 10).until(ec.element_to_be_clickable((By.XPATH, '//*[@id="lastReadPanel"]/a[2]'))).click()
     except TimeoutException:
@@ -69,13 +76,15 @@ def get_book_pages(driver, book_url, directory, page_nr=1, max_attempts=3) -> tu
 
             # timer to wait for the full loading of the page
             time.sleep(5)
-            driver.save_screenshot(f'{directory}{str(page_nr).zfill(2)}.png')
+            driver.save_screenshot(f'{directory}/{str(page_nr).zfill(2)}.png')
             print(f"Page: '{page_nr}' Copied")
             page_nr += 1
             driver.execute_script("arguments[0].click();", element)
 
     except TimeoutException:
         print("Reached the last page.")
+        driver.quit()
+        return True, directory
 
     except NoSuchElementException:
         if max_attempts > 0:
@@ -91,5 +100,3 @@ def get_book_pages(driver, book_url, directory, page_nr=1, max_attempts=3) -> tu
         driver.quit()
         return False
 
-    driver.quit()
-    return True, directory
