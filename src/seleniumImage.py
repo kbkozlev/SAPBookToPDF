@@ -9,7 +9,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from src.helper.exceptions import LoginFailedError
 
 
-def capture_book_pages(e_mail: str, passwd: str, book_url: str) -> bool:
+def capture_book_pages(e_mail: str, passwd: str, book_url: str) -> tuple[bool, str] | tuple[bool, None]:
     directory = 'files/rawPictures'
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -36,15 +36,16 @@ def capture_book_pages(e_mail: str, passwd: str, book_url: str) -> bool:
             raise LoginFailedError()
         except TimeoutException:
             print("Logged in successfully!")
-            get_book_pages(driver=driver, book_url=book_url, directory=directory)
+            success, output_folder = get_book_pages(driver=driver, book_url=book_url, output_directory=directory)
+            return success, output_folder
 
     except LoginFailedError as e:
         print(e)
         driver.quit()
-        return False
+        return False, None
 
 
-def get_book_pages(driver, book_url, directory, page_nr=1, max_attempts=3) -> bool | tuple[bool, str]:
+def get_book_pages(driver, book_url, output_directory, page_nr=1, max_attempts=3) -> tuple[bool, str] | tuple[bool, None]:
 
     response = requests.get(book_url)
     if response.status_code == 200:
@@ -77,7 +78,7 @@ def get_book_pages(driver, book_url, directory, page_nr=1, max_attempts=3) -> bo
 
             # timer to wait for the full loading of the page
             time.sleep(5)
-            driver.save_screenshot(f'{directory}/{str(page_nr).zfill(2)}.png')
+            driver.save_screenshot(f'{output_directory}/{str(page_nr).zfill(2)}.png')
             print(f"Page: '{page_nr}' Copied")
             page_nr += 1
             driver.execute_script("arguments[0].click();", element)
@@ -85,7 +86,7 @@ def get_book_pages(driver, book_url, directory, page_nr=1, max_attempts=3) -> bo
     except TimeoutException:
         print("Reached the last page.")
         driver.quit()
-        return True, directory
+        return True, output_directory
 
     except NoSuchElementException:
         if max_attempts > 0:
@@ -94,9 +95,9 @@ def get_book_pages(driver, book_url, directory, page_nr=1, max_attempts=3) -> bo
         else:
             print("Max attempts reached. Exiting.")
             driver.quit()
-            return False
+            return False, None
 
     except Exception as e:
         print(f"Error: {e}")
         driver.quit()
-        return False
+        return False, None

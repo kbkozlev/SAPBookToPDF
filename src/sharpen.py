@@ -4,7 +4,7 @@ import numpy as np
 import shutil
 
 
-def sharpen_images_in_folder(input_folder) -> bool | tuple[bool, str]:
+def sharpen_images_in_folder(input_folder) -> tuple[bool, str] | tuple[bool, None]:
     output_folder = 'files/sharpenedPictures'
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
@@ -34,6 +34,6 @@ def sharpen_images_in_folder(input_folder) -> bool | tuple[bool, str]:
                 print(f"Image '{file_name}' sharpened.")
         else:
             print(f"Unable to read '{file_name}'")
-            return False  # Return False if any image failed to read
+            return False, None
 
-    return True, output_folder  # Return True if all images processed successfully
+    return True, output_folder

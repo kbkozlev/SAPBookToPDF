@@ -3,7 +3,7 @@ import shutil
 import subprocess
 
 
-def compress_images(input_folder) -> bool | tuple[bool, str]:
+def compress_images(input_folder) -> tuple[bool, str] | tuple[bool, None]:
     pngquant_path = 'src/pngquant/pngquant.exe'
     output_folder = 'files/finalPictures/'
 
@@ -28,4 +28,4 @@ def compress_images(input_folder) -> bool | tuple[bool, str]:
 
     except Exception as e:
         print(f"Error during compression: {e}")
-        return False
+        return False, None

@@ -2,7 +2,7 @@ from PIL import Image
 import os
 
 
-def crop_images(input_folder) -> bool | tuple[bool, str]:
+def crop_images(input_folder) -> tuple[bool, str] | tuple[bool, None]:
     """
     Crops images from the input folder based on coordinates and saves cropped images to the output folder.
 
@@ -36,10 +36,10 @@ def crop_images(input_folder) -> bool | tuple[bool, str]:
 
             except Exception as e:
                 print(f"Error: {e}")
-                return False
+                return False, None
 
         print(f"All pictures have been cropped and saved to folder '{output_folder}'.")
         return True, output_folder
     else:
         print(f"No Files in '{input_folder}'.")
-        return False
+        return False, None
