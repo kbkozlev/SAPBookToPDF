@@ -3,7 +3,7 @@ import shutil
 import subprocess
 
 
-def compress_images(input_folder) -> tuple[bool, str] | tuple[bool, None]:
+def compress_pictures(input_folder) -> tuple[bool, str] | tuple[bool, None]:
     pngquant_path = 'src/pngquant/pngquant.exe'
     output_folder = 'files/finalPictures/'
 

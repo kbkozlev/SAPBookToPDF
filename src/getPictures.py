@@ -3,17 +3,26 @@ import time
 import requests
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
-from src.helper.exceptions import LoginFailedError
+from src.helper.customExceptions import LoginFailedError
 
 
 def capture_book_pages(e_mail: str, passwd: str, book_url: str) -> tuple[bool, str] | tuple[bool, None]:
+
     directory = 'files/rawPictures'
     if not os.path.exists(directory):
         os.makedirs(directory)
 
+    success, driver = login_sap_press(e_mail=e_mail, passwd=passwd)
+    if success:
+        success, output_folder = get_book_pages(driver=driver, book_url=book_url, output_directory=directory)
+        return success, output_folder
+
+
+def login_sap_press(e_mail: str, passwd: str) -> tuple[bool, WebDriver] | bool:
     desired_dpi = 2.0
     options = webdriver.ChromeOptions()
     options.add_argument(f"--force-device-scale-factor={desired_dpi}")
@@ -36,13 +45,12 @@ def capture_book_pages(e_mail: str, passwd: str, book_url: str) -> tuple[bool, s
             raise LoginFailedError()
         except TimeoutException:
             print("Logged in successfully!")
-            success, output_folder = get_book_pages(driver=driver, book_url=book_url, output_directory=directory)
-            return success, output_folder
+            return True, driver
 
     except LoginFailedError as e:
         print(e)
         driver.quit()
-        return False, None
+        return False
 
 
 def get_book_pages(driver, book_url, output_directory, page_nr=1, max_attempts=3) -> tuple[bool, str] | tuple[bool, None]:

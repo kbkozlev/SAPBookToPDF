@@ -12,7 +12,8 @@ def create_ini_file():
             'Password': ''
         }
         config['Book'] = {
-            'Book ID': ''
+            'Book ID': '',
+            'Archive Name': ''
         }
 
         with open(file_path, 'w') as configfile:
@@ -40,7 +41,7 @@ def get_credentials():
     return None, None
 
 
-def get_book():
+def get_book_id():
     if os.path.exists(file_path):
         config = configparser.ConfigParser()
         config.read(file_path)
@@ -48,7 +49,8 @@ def get_book():
         book = config['Book'] if 'Book' in config else None
         if book:
             book_id = book.get('Book ID')
-            return book_id
+            arch_name = book.get('Archive Name')
+            return book_id, arch_name
 
         print("No 'Book' section found in the INI file.")
         return None

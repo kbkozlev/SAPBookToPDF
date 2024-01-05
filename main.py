@@ -1,11 +1,11 @@
 import os
 from send2trash import send2trash
-from src.cropPic import crop_images
-from src.zip_backup import create_backup
-from src.seleniumImage import capture_book_pages
-from src.sharpen import sharpen_images_in_folder
-from src.compress import compress_images
-from src.helper.credentials import create_ini_file, get_credentials, get_book
+from src.cropPictures import crop_images
+from src.createBackup import create_backup
+from src.getPictures import capture_book_pages
+from src.sharpenPictures import sharpen_images_in_folder
+from src.compressPictures import compress_pictures
+from src.helper.createIniFile import create_ini_file, get_credentials, get_book_id
 
 
 def process_book_images(e_mail: str, passwd: str, book_url: str, backup_name: str) -> bool:
@@ -15,7 +15,7 @@ def process_book_images(e_mail: str, passwd: str, book_url: str, backup_name: st
         ("Capturing book pages", lambda: capture_book_pages(e_mail, passwd, book_url)),
         ("Cropping images", lambda: crop_images(output_folder)),
         ("Sharpening images", lambda: sharpen_images_in_folder(output_folder)),
-        ("Compressing images", lambda: compress_images(output_folder)),
+        ("Compressing images", lambda: compress_pictures(output_folder)),
         ("Creating backup", lambda: create_backup(output_folder, backup_name)),
     ]
 
@@ -44,10 +44,10 @@ def remove_directories():
 if __name__ == '__main__':
     create_ini_file()
     email, password = get_credentials()
-    book = get_book()
+    book, arch_name = get_book_id()
 
     if email and password:
-        processing_successful = process_book_images(e_mail=email, passwd=password, book_url=book, backup_name='pictureBackup')
+        processing_successful = process_book_images(e_mail=email, passwd=password, book_url=book, backup_name=arch_name)
 
         if processing_successful:
             remove_directories()
