@@ -4,12 +4,11 @@ import numpy as np
 import shutil
 
 
-def sharpen_images_in_folder():
+def sharpen_images_in_folder(input_folder):
     output_folder = 'files/sharpenedPictures'
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    input_folder = 'files/croppedPictures'
     files = os.listdir(input_folder)
     files.sort(key=lambda x: int(os.path.splitext(x)[0]))
 
@@ -37,4 +36,4 @@ def sharpen_images_in_folder():
             print(f"Unable to read '{file_name}'")
             return False  # Return False if any image failed to read
 
-    return True  # Return True if all images processed successfully
+    return True, output_folder  # Return True if all images processed successfully

@@ -1,25 +1,18 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as ec
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
-import time
 import os
+import time
+from typing import Any
+from selenium import webdriver
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.support.ui import WebDriverWait
+from src.helper.exceptions import LoginFailedError
 
 
-class LoginFailedError(Exception):
-    def __init__(self, message="Login failed!"):
-        self.message = message
-        super().__init__(self.message)
-
-
-def capture_book_pages(book_url: str) -> bool:
+def capture_book_pages(e_mail: str, passwd: str, book_url: str) -> bool:
     directory = 'files/rawPictures'
     if not os.path.exists(directory):
         os.makedirs(directory)
-
-    email = input("Enter your email: ")
-    password = input("Enter your password: ")
 
     desired_dpi = 2.0
     options = webdriver.ChromeOptions()
@@ -30,9 +23,9 @@ def capture_book_pages(book_url: str) -> bool:
 
     try:
         email_el = driver.find_element(By.ID, "id_login-username")
-        email_el.send_keys(email)
+        email_el.send_keys(e_mail)
         password_el = driver.find_element(By.ID, "id_login-password")
-        password_el.send_keys(password)
+        password_el.send_keys(passwd)
         login_button = driver.find_element(By.XPATH, "//button[@name='login_submit']")
         login_button.click()
         print("Logging in...")
@@ -42,7 +35,7 @@ def capture_book_pages(book_url: str) -> bool:
             raise LoginFailedError()
         except TimeoutException:
             print("Logged in successfully!")
-            get_book_pages(driver=driver, book_url=book_url)
+            get_book_pages(driver=driver, book_url=book_url, directory=directory)
 
     except LoginFailedError as e:
         print(e)
@@ -50,7 +43,7 @@ def capture_book_pages(book_url: str) -> bool:
         return False
 
 
-def get_book_pages(driver, book_url, page_nr=1, max_attempts=3) -> bool | None:
+def get_book_pages(driver, book_url, directory, page_nr=1, max_attempts=3) -> tuple[bool, Any] | bool:
     driver.get(book_url)
 
     time.sleep(2)
@@ -76,7 +69,7 @@ def get_book_pages(driver, book_url, page_nr=1, max_attempts=3) -> bool | None:
 
             # timer to wait for the full loading of the page
             time.sleep(5)
-            driver.save_screenshot(f'files/rawPictures/{str(page_nr).zfill(2)}.png')
+            driver.save_screenshot(f'{directory}{str(page_nr).zfill(2)}.png')
             print(f"Page: '{page_nr}' Copied")
             page_nr += 1
             driver.execute_script("arguments[0].click();", element)
@@ -99,4 +92,4 @@ def get_book_pages(driver, book_url, page_nr=1, max_attempts=3) -> bool | None:
         return False
 
     driver.quit()
-    return True
+    return True, directory
