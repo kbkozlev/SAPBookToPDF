@@ -4,12 +4,14 @@ from src.seleniumImage import capture_book_pages
 from src.sharpen import sharpen_images_in_folder
 from src.compress import compress_png_folder
 from src.helper.credentials import create_cred_file, get_credentials
+import os
+from send2trash import send2trash
 
 
 def process_book_images(e_mail: str, passwd: str, book_url: str, backup_name: str) -> bool:
+
     # Step 1: Capture book pages
     capture_success, cap_out_dir = capture_book_pages(e_mail, passwd, book_url)
-
     if not capture_success:
         print("Step 1 (Capturing book pages): Failed")
         return False
@@ -36,6 +38,19 @@ def process_book_images(e_mail: str, passwd: str, book_url: str, backup_name: st
     compress_png_folder(input_folder=sharp_out_dir)
     print("All steps completed successfully!")
     return True
+
+
+if process_book_images:
+    for dir_entry in os.listdir('files'):
+        dir_full_path = os.path.join('files', dir_entry)
+
+        # Check if it's a directory and not the exception directory
+        if os.path.isdir(dir_full_path) and dir_entry != 'finalPictures':
+            try:
+                send2trash(dir_full_path)
+                print(f"Directory '{dir_entry}' successfully removed.")
+            except OSError as e:
+                print(f"Error: {dir_entry} : {e.strerror}")
 
 
 if __name__ == '__main__':
