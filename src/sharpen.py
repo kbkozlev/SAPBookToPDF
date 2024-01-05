@@ -36,4 +36,5 @@ def sharpen_images_in_folder(input_folder) -> tuple[bool, str] | tuple[bool, Non
             print(f"Unable to read '{file_name}'")
             return False, None
 
+    print(f"All pictures have been sharpened and saved to folder '{output_folder}'.")
     return True, output_folder
