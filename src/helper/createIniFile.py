@@ -13,7 +13,7 @@ def create_ini_file():
         }
         config['Book'] = {
             'Book ID': '',
-            'Archive Name': ''
+            'Archive Name': 'Archive'
         }
 
         with open(file_path, 'w') as configfile:
