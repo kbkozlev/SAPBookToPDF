@@ -18,7 +18,7 @@ def crop_images() -> bool | None:
         os.makedirs(output_folder)
 
     # Get a list of files in the folder and sort them numerically
-    input_folder = 'src/rawPictures'
+    input_folder = 'files/rawPictures'
     files = os.listdir(input_folder)
     files.sort(key=lambda x: int(os.path.splitext(x)[0]))
 
@@ -33,14 +33,14 @@ def crop_images() -> bool | None:
                     cropped_image = image.crop(coordinates)
                     cropped_image.save(output_image_path)
 
-                    print(f"Image {filename} has been cropped.")
+                    print(f"Image '{filename}' has been cropped.")
 
             except Exception as e:
                 print(f"Error: {e}")
                 return False
 
-        print(f"All pictures have been cropped and saved to folder {output_folder}.")
+        print(f"All pictures have been cropped and saved to folder '{output_folder}'.")
         return True
     else:
-        print(f"No Files in {input_folder}")
+        print(f"No Files in '{input_folder}'.")
         return False

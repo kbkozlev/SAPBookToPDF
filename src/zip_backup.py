@@ -2,13 +2,13 @@ import py7zr
 import os
 
 
-def create_backup():
+def create_backup() -> bool:
 
     # Check if the folder exists
     input_folder = 'files/croppedPictures'
     if not os.path.exists(input_folder):
         print(f"Folder '{input_folder}' does not exist.")
-        return
+        return False
 
     output_7z_file = "croppedPictures_backup.7z"
 
@@ -22,11 +22,12 @@ def create_backup():
             # Add sorted files to the archive
             for file in files:
                 file_path = os.path.join(input_folder, file)
-                print(f"Adding {file} to archive")
+                print(f"Adding '{file}' to archive")
                 archive.write(file_path, os.path.relpath(file_path, input_folder))
 
         print(f"Folder '{input_folder}' successfully compressed to '{output_7z_file}'.")
+        return True
 
     else:
-        print(f"No Files in {input_folder}, nothing to archive")
+        print(f"No Files in '{input_folder}', nothing to archive")
         return False

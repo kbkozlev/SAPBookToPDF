@@ -2,7 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 import time
 import os
 
@@ -13,13 +13,7 @@ class LoginFailedError(Exception):
         super().__init__(self.message)
 
 
-def capture_book_pages(book_url: str) -> bool | None:
-    """
-    This function makes a screenshot of every page of a provided book
-    :param book_url:  URL in the SAP Press Library
-    :return:
-    """
-
+def capture_book_pages(book_url: str) -> bool:
     directory = 'files/rawPictures'
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -34,7 +28,6 @@ def capture_book_pages(book_url: str) -> bool | None:
     driver = webdriver.Chrome(options=options)
     driver.get("https://www.sap-press.com/accounts/login/?next=/")
 
-    # Login
     try:
         email_el = driver.find_element(By.ID, "id_login-username")
         email_el.send_keys(email)
@@ -49,51 +42,61 @@ def capture_book_pages(book_url: str) -> bool | None:
             raise LoginFailedError()
         except TimeoutException:
             print("Logged in successfully!")
+            get_book_pages(driver=driver, book_url=book_url)
 
     except LoginFailedError as e:
         print(e)
         driver.quit()
         return False
 
-    # Navigate to book
-    driver.get(book_url)
-    if driver.find_element(By.CLASS_NAME, "errorpage"):
-        print("Page not found!")
-        return False
 
-    # Remove last position message and go full screen
+def get_book_pages(driver, book_url, page_nr=1, max_attempts=3) -> bool | None:
+    driver.get(book_url)
+
+    time.sleep(2)
     try:
         WebDriverWait(driver, 10).until(ec.element_to_be_clickable((By.XPATH, '//*[@id="lastReadPanel"]/a[2]'))).click()
     except TimeoutException:
         pass
 
+    time.sleep(2)
     try:
-        WebDriverWait(driver, 10).until(ec.element_to_be_clickable((By.XPATH, '//*[@id="reader_nav"]/ul/li[3]/ul/li[4]/a'))).click()
+        WebDriverWait(driver, 10).until(
+            ec.element_to_be_clickable((By.XPATH, '//*[@id="reader_nav"]/ul/li[3]/ul/li[4]/a'))).click()
     except TimeoutException:
         pass
 
     driver.set_window_size(1500, 1800)
 
-    page_nr = 1
-    while True:
-        try:
-            # Wait for the element to be present and visible
+    try:
+        while True:
             element = WebDriverWait(driver, 10).until(
-                ec.visibility_of_element_located((By.XPATH, '//*[@id="reader_nav"]/ul/li[8]/a[2]')))
+                ec.visibility_of_element_located(
+                    (By.XPATH, '/html/body/div[5]/div/div/div[4]/div[1]/div[1]/ul/li[8]/a[2]/span')))
 
-            time.sleep(2)
-            driver.save_screenshot(f'rawPictures/{str(page_nr).zfill(2)}.png')
-            print(f"Page: {page_nr} Copied")
+            # timer to wait for the full loading of the page
+            time.sleep(5)
+            driver.save_screenshot(f'files/rawPictures/{str(page_nr).zfill(2)}.png')
+            print(f"Page: '{page_nr}' Copied")
             page_nr += 1
-
-            # Execute JavaScript to click the next page element
             driver.execute_script("arguments[0].click();", element)
 
-        except Exception as e:
-            print(f"Error: {e}")
+    except TimeoutException:
+        print("Reached the last page.")
+
+    except NoSuchElementException:
+        if max_attempts > 0:
+            print("Element not found. Retrying...")
+            return get_book_pages(driver, book_url, page_nr, max_attempts - 1)
+        else:
+            print("Max attempts reached. Exiting.")
             driver.quit()
             return False
-        finally:
-            break
+
+    except Exception as e:
+        print(f"Error: {e}")
+        driver.quit()
+        return False
 
     driver.quit()
+    return True
