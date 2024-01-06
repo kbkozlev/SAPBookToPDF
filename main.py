@@ -5,7 +5,7 @@ from src.createBackup import create_backup
 from src.getPictures import capture_book_pages
 from src.sharpenPictures import sharpen_images_in_folder
 from src.compressPictures import compress_pictures
-from src.helper.createIniFile import create_ini_file, get_credentials, get_book_id
+from src.helper.inPresent import is_present, args_dict
 
 
 def process_book_images(e_mail: str, passwd: str, book_url: str, backup_name: str) -> bool:
@@ -42,12 +42,13 @@ def remove_directories():
 
 
 if __name__ == '__main__':
-    create_ini_file()
-    email, password = get_credentials()
-    book, arch_name = get_book_id()
 
-    if email and password:
-        processing_successful = process_book_images(e_mail=email, passwd=password, book_url=book, backup_name=arch_name)
+    all_present, present_arguments = is_present(**args_dict)
+
+    if all_present and len(present_arguments) == 4:
+        email, passw, book, backup = present_arguments
+
+        processing_successful = process_book_images(e_mail=email, passwd=passw, book_url=book, backup_name=backup)
 
         if processing_successful:
             remove_directories()

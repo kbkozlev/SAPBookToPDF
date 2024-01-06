@@ -20,9 +20,11 @@ def capture_book_pages(e_mail: str, passwd: str, book_url: str) -> tuple[bool, s
     if success:
         success, output_folder = get_book_pages(driver=driver, book_url=book_url, output_directory=directory)
         return success, output_folder
+    else:
+        return success, None
 
 
-def login_sap_press(e_mail: str, passwd: str) -> tuple[bool, WebDriver] | bool:
+def login_sap_press(e_mail: str, passwd: str) -> tuple[bool, WebDriver] | tuple[bool, None]:
     desired_dpi = 2.0
     options = webdriver.ChromeOptions()
     options.add_argument(f"--force-device-scale-factor={desired_dpi}")
@@ -31,12 +33,9 @@ def login_sap_press(e_mail: str, passwd: str) -> tuple[bool, WebDriver] | bool:
     driver.get("https://www.sap-press.com/accounts/login/?next=/")
 
     try:
-        email_el = driver.find_element(By.ID, "id_login-username")
-        email_el.send_keys(e_mail)
-        password_el = driver.find_element(By.ID, "id_login-password")
-        password_el.send_keys(passwd)
-        login_button = driver.find_element(By.XPATH, "//button[@name='login_submit']")
-        login_button.click()
+        driver.find_element(By.ID, "id_login-username").send_keys(e_mail)
+        driver.find_element(By.ID, "id_login-password").send_keys(passwd)
+        driver.find_element(By.XPATH, "//button[@name='login_submit']").click()
         print("Logging in...")
 
         # waits for the 'login failed' page to appear, if it doesn't, raises the TimeoutException and continues
@@ -50,7 +49,10 @@ def login_sap_press(e_mail: str, passwd: str) -> tuple[bool, WebDriver] | bool:
     except LoginFailedError as e:
         print(e)
         driver.quit()
-        return False
+        return False, None
+
+    except Exception:
+        raise LoginFailedError
 
 
 def get_book_pages(driver, book_url, output_directory, page_nr=1, max_attempts=3) -> tuple[bool, str] | tuple[bool, None]:
