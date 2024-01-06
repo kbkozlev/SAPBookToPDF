@@ -5,7 +5,7 @@ from src.createBackup import create_backup
 from src.getPictures import capture_book_pages
 from src.sharpenPictures import sharpen_images_in_folder
 from src.compressPictures import compress_pictures
-from src.helper.inPresent import is_present, args_dict
+from src.helper.isPresent import is_present, args_dict
 
 
 def process_book_images(e_mail: str, passwd: str, book_url: str, backup_name: str) -> bool:
