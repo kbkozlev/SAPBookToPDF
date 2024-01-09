@@ -12,13 +12,9 @@ from src.helper.customExceptions import LoginFailedError
 
 def capture_book_pages(e_mail: str, passwd: str, book_url: str) -> tuple[bool, str] | tuple[bool, None]:
 
-    directory = 'files/rawPictures'
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
     success, driver = login_sap_press(e_mail=e_mail, passwd=passwd)
     if success:
-        success, output_folder = get_book_pages(driver=driver, book_url=book_url, output_directory=directory)
+        success, output_folder = get_book_pages(driver=driver, book_url=book_url)
         return success, output_folder
     else:
         return success, None
@@ -55,10 +51,15 @@ def login_sap_press(e_mail: str, passwd: str) -> tuple[bool, WebDriver] | tuple[
         raise LoginFailedError
 
 
-def get_book_pages(driver, book_url, output_directory, page_nr=1, max_attempts=3) -> tuple[bool, str] | tuple[bool, None]:
+def get_book_pages(driver, book_url, page_nr=1, max_attempts=3) -> tuple[bool, str] | tuple[bool, None]:
+
+    output_directory = 'files/rawPictures'
 
     response = requests.get(book_url)
     if response.status_code == 200:
+        if not os.path.exists(output_directory):
+            os.makedirs(output_directory)
+
         print('Navigating to book...')
         driver.get(book_url)
     else:
@@ -101,7 +102,7 @@ def get_book_pages(driver, book_url, output_directory, page_nr=1, max_attempts=3
     except NoSuchElementException:
         if max_attempts > 0:
             print("Element not found. Retrying...")
-            return get_book_pages(driver=driver, book_url=book_url, output_directory=output_directory, page_nr=page_nr, max_attempts=max_attempts - 1)
+            return get_book_pages(driver=driver, book_url=book_url, page_nr=page_nr, max_attempts=max_attempts - 1)
         else:
             print("Max attempts reached. Exiting.")
             driver.quit()
