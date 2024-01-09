@@ -45,7 +45,7 @@ if __name__ == '__main__':
 
     all_present, present_arguments = is_present(**args_dict)
 
-    if all_present and len(present_arguments) == 4:
+    if all_present:
         email, passw, book, backup = present_arguments
 
         processing_successful = process_book_images(e_mail=email, passwd=passw, book_url=book, backup_name=backup)
