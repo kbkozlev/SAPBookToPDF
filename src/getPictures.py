@@ -9,6 +9,10 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 from src.helper.customExceptions import LoginFailedError
 
+# Edge Import
+from selenium.webdriver.edge.service import Service as EdgeService
+from webdriver_manager.microsoft import EdgeChromiumDriverManager
+
 
 def capture_book_pages(e_mail: str, passwd: str, book_url: str) -> tuple[bool, str] | tuple[bool, None]:
 
@@ -22,10 +26,10 @@ def capture_book_pages(e_mail: str, passwd: str, book_url: str) -> tuple[bool, s
 
 def login_sap_press(e_mail: str, passwd: str) -> tuple[bool, WebDriver] | tuple[bool, None]:
     desired_dpi = 2.0
-    options = webdriver.ChromeOptions()
+    options = webdriver.EdgeOptions()
     options.add_argument(f"--force-device-scale-factor={desired_dpi}")
     options.add_argument("--headless")
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()), options=options)
     driver.get("https://www.sap-press.com/accounts/login/?next=/")
 
     try:
