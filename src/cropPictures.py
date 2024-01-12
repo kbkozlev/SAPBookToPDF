@@ -10,7 +10,7 @@ def crop_images(input_folder) -> tuple[bool, str] | tuple[bool, None]:
     input_folder: path to the folder containing input images.
     output_folder: path to save the cropped images.
     """
-    coordinates = (463, 282, 2471, 3182)
+    coordinates = (482, 282, 2490, 3182)
 
     # Create output folder if it doesn't exist
     output_folder = 'files/croppedPictures'
