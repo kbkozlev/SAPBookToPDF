@@ -87,12 +87,11 @@ def get_book_pages(driver, book_url, page_nr=1, max_attempts=3) -> tuple[bool, s
 
     try:
         while True:
-            element = WebDriverWait(driver, 10).until(
+            element = WebDriverWait(driver, 5).until(
                 ec.visibility_of_element_located(
                     (By.XPATH, '/html/body/div[5]/div/div/div[4]/div[1]/div[1]/ul/li[8]/a[2]/span')))
 
-            # timer to wait for the full loading of the page
-            time.sleep(5)
+            time.sleep(4)  # timer to wait for the full loading of the page (adjust based on internet quality)
             driver.save_screenshot(f'{output_directory}/{str(page_nr).zfill(2)}.png')
             print(f"Page: '{page_nr}' Copied")
             page_nr += 1
