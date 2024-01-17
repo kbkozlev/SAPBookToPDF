@@ -93,7 +93,7 @@ def get_book_pages(driver, book_url, page_nr=1, max_attempts=3) -> tuple[bool, s
 
             time.sleep(4)  # timer to wait for the full loading of the page (adjust based on internet quality)
             driver.save_screenshot(f'{output_directory}/{str(page_nr).zfill(2)}.png')
-            print(f"Page: '{page_nr}' Copied")
+            print(f"Page: '{page_nr}' copied")
             page_nr += 1
             driver.execute_script("arguments[0].click();", element)
 

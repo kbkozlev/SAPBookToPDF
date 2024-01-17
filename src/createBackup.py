@@ -23,7 +23,7 @@ def create_backup(input_folder, out_name) -> tuple[bool, str] | tuple[bool, None
             # Add sorted files to the archive
             for file in files:
                 file_path = os.path.join(input_folder, file)
-                print(f"Adding '{file}' to archive")
+                print(f"Image '{file}' archived")
                 archive.write(file_path, os.path.relpath(file_path, input_folder))
 
         print(f"Folder '{input_folder}' successfully compressed to '{output_name}'.")

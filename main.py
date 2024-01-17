@@ -33,7 +33,7 @@ def remove_directories():
     for dir_entry in os.listdir('files'):
         dir_full_path = os.path.join('files', dir_entry)
 
-        if os.path.isdir(dir_full_path) and dir_entry != 'finalPictures':
+        if os.path.isdir(dir_full_path):  # and dir_entry != 'finalPictures':
             try:
                 send2trash(dir_full_path)
                 print(f"Directory '{dir_entry}' successfully removed.")

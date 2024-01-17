@@ -32,7 +32,7 @@ def crop_images(input_folder) -> tuple[bool, str] | tuple[bool, None]:
                     cropped_image = image.crop(coordinates)
                     cropped_image.save(output_image_path)
 
-                    print(f"Image '{filename}' has been cropped.")
+                    print(f"Image '{filename}' cropped.")
 
             except Exception as e:
                 print(f"Error: {e}")
