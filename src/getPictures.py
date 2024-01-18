@@ -78,10 +78,7 @@ def get_book_list() -> tuple[bool, None] | tuple[bool, list]:
         result_list.append(result_dict)
         print(f"Book: '{clean_name}' added to list.")
 
-    if len(result_list) > 0:
-        return True, result_list
-    else:
-        return False, result_list
+    return True, result_list
 
 
 def get_book_pages(book_url, page_nr=1, max_attempts=3) -> tuple[bool, str] | tuple[bool, None]:
