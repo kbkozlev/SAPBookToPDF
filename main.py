@@ -38,6 +38,7 @@ def process_book_images(book_url: str, name: str, drv, i: int, total: int) -> bo
             print(f"\nStep '{step_name}': Failed")
             return False
 
+    remove_directories()
     print(f"\nBook [ {i} | {total} ]: '{name}' finished processing!")
     return True
 
@@ -60,9 +61,9 @@ def remove_directories() -> None:
 
 def main() -> None:
     """
-    1.Checks for entered credentials\n
-    2.Fetches a list of all books\n
-    3.Iterates over the list to fetch and process all images/pages of a book
+    1. Checks for entered credentials
+    2. Fetches a list of all books
+    3. Iterates over the list to fetch and process all images/pages of a book
     :return:
     """
     all_present, login_data = is_present()
@@ -73,16 +74,18 @@ def main() -> None:
         email, passwd = login_data
         success, book_list = init_books(e_mail=email, passwd=passwd, driver=driver)
 
-        if success:
-            for index, book in enumerate(book_list, start=1):
-                title, url = book['title'], book['href']
-                processing_successful = process_book_images(book_url=url, name=title, drv=driver, i=index,
-                                                            total=len(book_list))
+        if not success:
+            return
 
-                if processing_successful:
-                    remove_directories()
+        for index, book in enumerate(book_list, start=1):
+            title, url = book['title'], book['href']
+            finished = process_book_images(book_url=url, name=title, drv=driver, i=index, total=len(book_list))
 
-            print("\nAll Books were processed successfully!")
+            if not finished:
+                print(f"\nBook processing terminated for book: '{title}'")
+                return
+
+        print("\nAll Books were processed successfully!")
 
 
 if __name__ == '__main__':
