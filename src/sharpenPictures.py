@@ -5,6 +5,11 @@ import shutil
 
 
 def sharpen_images_in_folder(input_folder) -> tuple[bool, str] | tuple[bool, None]:
+    """
+    Uses a kernel to sharpen the images
+    :param input_folder:
+    :return:
+    """
     output_folder = 'files/3.sharpenedPictures'
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)

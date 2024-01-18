@@ -5,10 +5,8 @@ import os
 def crop_images(input_folder) -> tuple[bool, str] | tuple[bool, None]:
     """
     Crops images from the input folder based on coordinates and saves cropped images to the output folder.
-
-    Args:
-    input_folder: path to the folder containing input images.
-    output_folder: path to save the cropped images.
+    :param input_folder:
+    :return:
     """
     coordinates = (482, 282, 2490, 3182)
 

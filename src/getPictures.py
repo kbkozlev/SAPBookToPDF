@@ -8,6 +8,14 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 
 def get_book_pages(book_url, driver, page_nr=1, max_attempts=3) -> tuple[bool, str] | tuple[bool, None]:
+    """
+    Creates a screenshot of every page of a book
+    :param book_url: The URL of the book to be processed
+    :param driver: Driver object
+    :param page_nr: Page number used for the name of the screenshot
+    :param max_attempts: Max re-tries if it fails to find an element
+    :return:
+    """
     output_directory = 'files/1.rawPictures'
 
     response = requests.get(book_url)

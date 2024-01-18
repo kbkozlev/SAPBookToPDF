@@ -3,8 +3,13 @@ import os
 
 
 def create_backup(input_folder, out_name) -> tuple[bool, str] | tuple[bool, None]:
+    """
+    Creates a 7z backup of the processed images.
+    :param input_folder:
+    :param out_name: Name of the archive
+    :return:
+    """
 
-    # Check if the folder exists
     if not os.path.exists(input_folder):
         print(f"\nFolder '{input_folder}' does not exist.")
         return False, None

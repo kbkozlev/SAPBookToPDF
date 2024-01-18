@@ -5,7 +5,11 @@ from selenium.webdriver.edge.service import Service as EdgeService
 from webdriver_manager.microsoft import EdgeChromiumDriverManager
 
 
-def innit_driver():
+def init_driver():
+    """
+    Initiates the Selenium "Edge" driver that is going to be used.
+    :return:
+    """
     desired_dpi = 2.0
     options = webdriver.EdgeOptions()
     options.add_argument(f"--force-device-scale-factor={desired_dpi}")

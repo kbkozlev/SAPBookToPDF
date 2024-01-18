@@ -7,6 +7,16 @@ from src.helper.customExceptions import LoginFailedError
 
 
 def init_books(e_mail: str, passwd: str, driver) -> tuple[bool, list] | tuple[bool, None]:
+    """
+    Initialises the list of books to be processed.
+    Calls the "login" function and the "list creation" function.
+    Waits for person to confirm the list of books to be processed.
+
+    :param e_mail: E-mail is passed to the login function.
+    :param passwd: Password is passed to the login function
+    :param driver: Driver object
+    :return:
+    """
     logged_in = login_sap_press(e_mail=e_mail, passwd=passwd, driver=driver)
 
     if logged_in:
@@ -24,6 +34,13 @@ def init_books(e_mail: str, passwd: str, driver) -> tuple[bool, list] | tuple[bo
 
 
 def login_sap_press(e_mail: str, passwd: str, driver) -> bool:
+    """
+    Handles the logging in to the website
+    :param e_mail: E-mail to be used for signing in
+    :param passwd: Password to be used for signing in
+    :param driver: Driver object
+    :return:
+    """
     driver.get("https://www.sap-press.com/accounts/login/?next=/")
 
     try:
@@ -42,7 +59,6 @@ def login_sap_press(e_mail: str, passwd: str, driver) -> bool:
 
     except LoginFailedError as e:
         print(e)
-        # driver.quit()
         return False
 
     except Exception:
@@ -50,6 +66,12 @@ def login_sap_press(e_mail: str, passwd: str, driver) -> bool:
 
 
 def get_book_list(driver) -> tuple[bool, None] | tuple[bool, list]:
+    """
+    For all elements with class "product-detail" in the page,
+    it fetches the "name" and "href" element and stores them in a list of dictionaries
+    :param driver: Driver object
+    :return:
+    """
     driver.get("https://library.sap-press.com/library/")
 
     try:

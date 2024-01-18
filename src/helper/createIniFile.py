@@ -5,6 +5,10 @@ file_path = 'src/helper/info.ini'
 
 
 def create_ini_file():
+    """
+    Creates an INI file for storing credentials
+    :return:
+    """
     if not os.path.exists(file_path):
         config = configparser.ConfigParser()
         config['Credentials'] = {
@@ -20,6 +24,10 @@ def create_ini_file():
 
 
 def get_credentials():
+    """
+    Fetches the credentials from the INI file
+    :return:
+    """
     if os.path.exists(file_path):
         config = configparser.ConfigParser()
         config.read(file_path)

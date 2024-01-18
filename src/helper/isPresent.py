@@ -2,6 +2,12 @@ from src.helper.createIniFile import create_ini_file, get_credentials
 
 
 def is_present() -> tuple:
+    """
+    Calls the function to create the INI file.\n
+    Calls the function to fetch the credentials from the INI file.\n
+    Checks if the both the E-mail and Password are present in the INI file
+    :return:
+    """
     create_ini_file()
     email, password = get_credentials()
 
