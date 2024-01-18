@@ -82,7 +82,7 @@ def get_book_list() -> tuple[bool, None] | tuple[bool, list]:
 
 
 def get_book_pages(book_url, page_nr=1, max_attempts=3) -> tuple[bool, str] | tuple[bool, None]:
-    output_directory = 'files/rawPictures'
+    output_directory = 'files/1.rawPictures'
 
     response = requests.get(book_url)
     if response.status_code == 200:

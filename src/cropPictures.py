@@ -13,7 +13,7 @@ def crop_images(input_folder) -> tuple[bool, str] | tuple[bool, None]:
     coordinates = (482, 282, 2490, 3182)
 
     # Create output folder if it doesn't exist
-    output_folder = 'files/croppedPictures'
+    output_folder = 'files/2.croppedPictures'
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
