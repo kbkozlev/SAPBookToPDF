@@ -38,8 +38,8 @@ def crop_images(input_folder) -> tuple[bool, str] | tuple[bool, None]:
                 print(f"Error: {e}")
                 return False, None
 
-        print(f"\nAll pictures have been cropped and saved to folder '{output_folder}'.")
+        print(f"\nAll pictures have been cropped and saved to folder '{output_folder}'.\n")
         return True, output_folder
     else:
-        print(f"\nNo Files in '{input_folder}'.")
+        print(f"\nNo Files in '{input_folder}'.\n")
         return False, None

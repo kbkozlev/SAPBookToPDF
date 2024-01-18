@@ -24,9 +24,9 @@ def create_backup(input_folder, out_name) -> tuple[bool, str] | tuple[bool, None
                 print(f"Image '{file}' archived")
                 archive.write(file_path, os.path.relpath(file_path, input_folder))
 
-        print(f"\nFolder '{input_folder}' successfully compressed to '{output_name}'.")
+        print(f"\nFolder '{input_folder}' successfully compressed to '{output_name}'.\n")
         return True, input_folder
 
     else:
-        print(f"\nNo Files in '{input_folder}', nothing to archive")
+        print(f"\nNo Files in '{input_folder}', nothing to archive\n")
         return False, None

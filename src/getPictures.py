@@ -49,7 +49,7 @@ def get_book_pages(book_url, driver, page_nr=1, max_attempts=3) -> tuple[bool, s
             driver.execute_script("arguments[0].click();", element)
 
     except TimeoutException:
-        print("\nReached the last page.")
+        print("\nReached the last page.\n")
         return True, output_directory
 
     except NoSuchElementException:
