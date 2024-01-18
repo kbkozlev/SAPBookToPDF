@@ -10,7 +10,7 @@ from src.helper.innitDriver import innit_driver
 from src.helper.innitBooks import init_books
 
 
-def process_book_images(book_url: str, name: str, drv) -> bool:
+def process_book_images(book_url: str, name: str, drv, i: int, total: int) -> bool:
     output_folder = ''
 
     steps = [
@@ -21,15 +21,15 @@ def process_book_images(book_url: str, name: str, drv) -> bool:
         ("Creating backup", lambda: create_backup(output_folder, name)),
     ]
 
-    print(f"\nBook: '{name}' started processing")
+    print(f"\nBook [ {i} | {total} ]: '{name}' started processing")
 
     for step_name, step_function in steps:
-        success, output_folder = step_function()
-        if not success:
+        ok, output_folder = step_function()
+        if not ok:
             print(f"\nStep '{step_name}': Failed")
             return False
 
-    print(f"\nBook: '{name}' finished processing!")
+    print(f"\nBook [ {i} | {total} ]: '{name}' finished processing!")
     return True
 
 
@@ -45,22 +45,28 @@ def remove_directories():
                 print(f"\nError: {dir_entry} : {e.strerror}")
 
 
+def main(driver, books):
+
+    for index, book in enumerate(books, start=1):
+        title, url = book['title'], book['href']
+        processing_successful = process_book_images(book_url=url, name=title, drv=driver, i=index, total=len(books))
+
+        if processing_successful:
+            remove_directories()
+
+    driver.quit()
+
+
 if __name__ == '__main__':
     all_present, login_data = is_present()
 
-    if all_present:
-        driver = innit_driver()
+    if not all_present:
+        exit()
+
+    with innit_driver() as mainDriver:
         email, passwd = login_data
-        suc, book_list = init_books(e_mail=email, passwd=passwd, driver=driver)
+        success, book_list = init_books(e_mail=email, passwd=passwd, driver=mainDriver)
 
-        if suc:
-            for book in book_list:
-                title, url = book['title'], book['href']
-                processing_successful = process_book_images(book_url=url, name=title, drv=driver)
-
-                if processing_successful:
-                    remove_directories()
-
+        if success:
+            main(driver=mainDriver, books=book_list)
             print("\nAll Books were processed successfully!")
-
-        driver.quit()
