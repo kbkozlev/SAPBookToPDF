@@ -26,7 +26,9 @@ def init_books(e_mail: str, passwd: str) -> tuple[bool, list] | tuple[bool, None
 
     if logged_in:
         success, book_list = get_book_list()
-        return success, book_list if success else (False, None)
+        cont = input("Continue: y/n? ")
+        if cont.lower() == "y" or " ":
+            return success, book_list if success else (False, None)
 
     return False, None
 
