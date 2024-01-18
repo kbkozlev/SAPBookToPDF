@@ -10,13 +10,16 @@ def compress_pictures(input_folder: str) -> tuple[bool, str] | tuple[bool, None]
     :return:
     """
     pngquant_path = 'src/helper/pngquant/pngquant.exe'
+
+    # Create output folder if it doesn't exist
     output_folder = 'files/4.finalPictures/'
+    os.makedirs(output_folder, exist_ok=True)
+
+    # Get a list of files in the folder and sort them numerically
+    files = os.listdir(input_folder)
+    files.sort(key=lambda x: int(os.path.splitext(x)[0]))
 
     try:
-        os.makedirs(output_folder, exist_ok=True)
-
-        files = sorted([f for f in os.listdir(input_folder) if f.endswith('.png')], key=lambda x: int(os.path.splitext(x)[0]))
-
         for filename in files:
             input_path = os.path.join(input_folder, filename)
             output_path = os.path.join(output_folder, filename)

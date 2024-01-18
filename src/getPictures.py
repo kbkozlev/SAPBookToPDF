@@ -17,12 +17,11 @@ def get_book_pages(book_url: str, driver: webdriver.Edge, page_nr: int = 1, max_
     :param max_attempts: Max re-tries if it fails to find an element
     :return:
     """
-    output_directory = 'files/1.rawPictures'
+    output_folder = 'files/1.rawPictures'
 
     response = requests.get(book_url)
     if response.status_code == 200:
-        if not os.path.exists(output_directory):
-            os.makedirs(output_directory)
+        os.makedirs(output_folder, exist_ok=True)
 
         print('\nNavigating to book...')
         driver.get(book_url)
@@ -53,14 +52,14 @@ def get_book_pages(book_url: str, driver: webdriver.Edge, page_nr: int = 1, max_
                     (By.XPATH, '/html/body/div[5]/div/div/div[4]/div[1]/div[1]/ul/li[8]/a[2]/span')))
 
             time.sleep(4)  # timer to wait for the full loading of the page (adjust based on internet quality)
-            driver.save_screenshot(f'{output_directory}/{str(page_nr).zfill(2)}.png')
+            driver.save_screenshot(f'{output_folder}/{str(page_nr).zfill(2)}.png')
             print(f"Page: '{page_nr}' copied")
             page_nr += 1
             driver.execute_script("arguments[0].click();", element)
 
     except TimeoutException:
         print("\nReached the last page.\n")
-        return True, output_directory
+        return True, output_folder
 
     except NoSuchElementException:
         if max_attempts > 0:

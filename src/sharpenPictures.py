@@ -10,10 +10,11 @@ def sharpen_images_in_folder(input_folder: str) -> tuple[bool, str] | tuple[bool
     :param input_folder:
     :return:
     """
+    # Create output folder if it doesn't exist
     output_folder = 'files/3.sharpenedPictures'
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
+    os.makedirs(output_folder, exist_ok=True)
 
+    # Get a list of files in the folder and sort them numerically
     files = os.listdir(input_folder)
     files.sort(key=lambda x: int(os.path.splitext(x)[0]))
 

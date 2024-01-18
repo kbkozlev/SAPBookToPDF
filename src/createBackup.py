@@ -23,11 +23,10 @@ def create_backup(input_folder: str, out_name: str) -> tuple[bool, str] | tuple[
     # Create a 7z archive
     if len(files) > 0:
         with py7zr.SevenZipFile(output_name, 'w') as archive:
-            # Add sorted files to the archive
             for file in files:
                 file_path = os.path.join(input_folder, file)
-                print(f"Image '{file}' archived")
                 archive.write(file_path, os.path.relpath(file_path, input_folder))
+                print(f"Image '{file}' archived")
 
         print(f"\nFolder '{input_folder}' successfully compressed to '{output_name}'.\n")
         return True, input_folder

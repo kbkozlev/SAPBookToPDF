@@ -12,8 +12,7 @@ def crop_images(input_folder: str) -> tuple[bool, str] | tuple[bool, None]:
 
     # Create output folder if it doesn't exist
     output_folder = 'files/2.croppedPictures'
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
+    os.makedirs(output_folder, exist_ok=True)
 
     # Get a list of files in the folder and sort them numerically
     files = os.listdir(input_folder)
@@ -22,15 +21,13 @@ def crop_images(input_folder: str) -> tuple[bool, str] | tuple[bool, None]:
     if len(files) > 0:
         for filename in files:
             try:
-                if filename.endswith(('.png', '.jpg', '.jpeg')):  # Process only image files
-                    input_image_path = os.path.join(input_folder, filename)
-                    output_image_path = os.path.join(output_folder, filename)
+                input_image_path = os.path.join(input_folder, filename)
+                output_image_path = os.path.join(output_folder, filename)
 
-                    image = Image.open(input_image_path)
-                    cropped_image = image.crop(coordinates)
-                    cropped_image.save(output_image_path)
+                with Image.open(input_image_path) as image:
+                    image.crop(coordinates).save(output_image_path)
 
-                    print(f"Image '{filename}' cropped.")
+                print(f"Image '{filename}' cropped.")
 
             except Exception as e:
                 print(f"Error: {e}")
@@ -38,6 +35,7 @@ def crop_images(input_folder: str) -> tuple[bool, str] | tuple[bool, None]:
 
         print(f"\nAll pictures have been cropped and saved to folder '{output_folder}'.\n")
         return True, output_folder
+
     else:
         print(f"\nNo Files in '{input_folder}'.\n")
         return False, None
