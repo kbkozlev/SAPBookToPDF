@@ -1,4 +1,5 @@
 import re
+from selenium import webdriver
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
@@ -6,7 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from src.helper.customExceptions import LoginFailedError
 
 
-def init_books(e_mail: str, passwd: str, driver) -> tuple[bool, list] | tuple[bool, None]:
+def init_books(e_mail: str, passwd: str, driver: webdriver.Edge) -> tuple[bool, list] | tuple[bool, None]:
     """
     Initialises the list of books to be processed.
     Calls the "login" function and the "list creation" function.
@@ -33,7 +34,7 @@ def init_books(e_mail: str, passwd: str, driver) -> tuple[bool, list] | tuple[bo
     return False, None
 
 
-def login_sap_press(e_mail: str, passwd: str, driver) -> bool:
+def login_sap_press(e_mail: str, passwd: str, driver: webdriver.Edge) -> bool:
     """
     Handles the logging in to the website
     :param e_mail: E-mail to be used for signing in
@@ -65,7 +66,7 @@ def login_sap_press(e_mail: str, passwd: str, driver) -> bool:
         raise LoginFailedError
 
 
-def get_book_list(driver) -> tuple[bool, None] | tuple[bool, list]:
+def get_book_list(driver: webdriver.Edge) -> tuple[bool, None] | tuple[bool, list]:
     """
     For all elements with class "product-detail" in the page,
     it fetches the "name" and "href" element and stores them in a list of dictionaries

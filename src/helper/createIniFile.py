@@ -4,7 +4,7 @@ import configparser
 file_path = 'src/helper/info.ini'
 
 
-def create_ini_file():
+def create_ini_file() -> bool:
     """
     Creates an INI file for storing credentials
     :return:
@@ -23,7 +23,7 @@ def create_ini_file():
     return True
 
 
-def get_credentials():
+def get_credentials() -> tuple[str, str] | tuple[None, None]:
     """
     Fetches the credentials from the INI file
     :return:

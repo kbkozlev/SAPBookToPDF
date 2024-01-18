@@ -2,7 +2,7 @@ import py7zr
 import os
 
 
-def create_backup(input_folder, out_name) -> tuple[bool, str] | tuple[bool, None]:
+def create_backup(input_folder: str, out_name: str) -> tuple[bool, str] | tuple[bool, None]:
     """
     Creates a 7z backup of the processed images.
     :param input_folder:

@@ -2,7 +2,7 @@ from PIL import Image
 import os
 
 
-def crop_images(input_folder) -> tuple[bool, str] | tuple[bool, None]:
+def crop_images(input_folder: str) -> tuple[bool, str] | tuple[bool, None]:
     """
     Crops images from the input folder based on coordinates and saves cropped images to the output folder.
     :param input_folder:

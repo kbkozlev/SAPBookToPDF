@@ -4,7 +4,7 @@ import numpy as np
 import shutil
 
 
-def sharpen_images_in_folder(input_folder) -> tuple[bool, str] | tuple[bool, None]:
+def sharpen_images_in_folder(input_folder: str) -> tuple[bool, str] | tuple[bool, None]:
     """
     Uses a kernel to sharpen the images
     :param input_folder:

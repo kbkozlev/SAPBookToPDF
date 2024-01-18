@@ -1,7 +1,7 @@
 from src.helper.createIniFile import create_ini_file, get_credentials
 
 
-def is_present() -> tuple:
+def is_present() -> tuple[bool, list]:
     """
     Calls the function to create the INI file.\n
     Calls the function to fetch the credentials from the INI file.\n
