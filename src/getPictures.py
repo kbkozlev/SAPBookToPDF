@@ -38,14 +38,14 @@ def login_sap_press(e_mail: str, passwd: str) -> bool:
         driver.find_element(By.ID, "id_login-username").send_keys(e_mail)
         driver.find_element(By.ID, "id_login-password").send_keys(passwd)
         driver.find_element(By.XPATH, "//button[@name='login_submit']").click()
-        print("Logging in...")
+        print("\nLogging in...")
 
         # waits for the 'login failed' page to appear, if it doesn't, raises the TimeoutException and continues
         try:
             WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//*[@id="login-input"]/div[1]')))
             raise LoginFailedError()
         except TimeoutException:
-            print("Logged in successfully!")
+            print("\nLogged in successfully!")
             return True
 
     except LoginFailedError as e:
@@ -89,10 +89,10 @@ def get_book_pages(book_url, page_nr=1, max_attempts=3) -> tuple[bool, str] | tu
         if not os.path.exists(output_directory):
             os.makedirs(output_directory)
 
-        print('Navigating to book...')
+        print('\nNavigating to book...')
         driver.get(book_url)
     else:
-        print(f"Failed to load the book page. Received status code: {response.status_code}")
+        print(f"\nFailed to load the book page. Received status code: {response.status_code}")
 
     time.sleep(2)
 
@@ -123,20 +123,20 @@ def get_book_pages(book_url, page_nr=1, max_attempts=3) -> tuple[bool, str] | tu
             driver.execute_script("arguments[0].click();", element)
 
     except TimeoutException:
-        print("Reached the last page.")
+        print("\nReached the last page.")
         driver.quit()
         return True, output_directory
 
     except NoSuchElementException:
         if max_attempts > 0:
-            print("Element not found. Retrying...")
+            print("\nElement not found. Retrying...")
             return get_book_pages(book_url=book_url, page_nr=page_nr, max_attempts=max_attempts - 1)
         else:
-            print("Max attempts reached. Exiting.")
+            print("\nMax attempts reached. Exiting.")
             driver.quit()
             return False, None
 
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"\nError: {e}")
         driver.quit()
         return False, None

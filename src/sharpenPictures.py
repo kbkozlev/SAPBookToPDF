@@ -29,12 +29,12 @@ def sharpen_images_in_folder(input_folder) -> tuple[bool, str] | tuple[bool, Non
             if not success:
                 # If unable to save, copy the original image instead
                 shutil.copyfile(input_path, output_path)
-                print(f"Unable to save processed image '{file_name}'. Copied original instead.")
+                print(f"\nUnable to save processed image '{file_name}'. Copied original instead.")
             else:
                 print(f"Image '{file_name}' sharpened.")
         else:
-            print(f"Unable to read '{file_name}'")
+            print(f"\nUnable to read '{file_name}'")
             return False, None
 
-    print(f"All pictures have been sharpened and saved to folder '{output_folder}'.")
+    print(f"\nAll pictures have been sharpened and saved to folder '{output_folder}'.")
     return True, output_folder

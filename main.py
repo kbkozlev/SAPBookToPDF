@@ -24,7 +24,7 @@ def process_book_images(book_url: str, name: str) -> bool:
     for step_name, step_function in steps:
         success, output_folder = step_function()
         if not success:
-            print(f"Step '{step_name}': Failed")
+            print(f"\nStep '{step_name}': Failed")
             return False
 
     print(f"\nBook: {name} finished processing!")
@@ -40,7 +40,7 @@ def remove_directories():
                 send2trash(dir_full_path)
                 print(f"Directory '{dir_entry}' successfully removed.")
             except OSError as e:
-                print(f"Error: {dir_entry} : {e.strerror}")
+                print(f"\nError: {dir_entry} : {e.strerror}")
 
 
 if __name__ == '__main__':
@@ -61,4 +61,4 @@ if __name__ == '__main__':
 
             print("\nAll Books were processed successfully!")
         else:
-            print("No Books Found!")
+            print("\nNo Books Found!")

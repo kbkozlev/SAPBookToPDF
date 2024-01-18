@@ -6,7 +6,7 @@ def create_backup(input_folder, out_name) -> tuple[bool, str] | tuple[bool, None
 
     # Check if the folder exists
     if not os.path.exists(input_folder):
-        print(f"Folder '{input_folder}' does not exist.")
+        print(f"\nFolder '{input_folder}' does not exist.")
         return False, None
 
     output_name = f"files/{out_name}.7z"
@@ -24,9 +24,9 @@ def create_backup(input_folder, out_name) -> tuple[bool, str] | tuple[bool, None
                 print(f"Image '{file}' archived")
                 archive.write(file_path, os.path.relpath(file_path, input_folder))
 
-        print(f"Folder '{input_folder}' successfully compressed to '{output_name}'.")
+        print(f"\nFolder '{input_folder}' successfully compressed to '{output_name}'.")
         return True, input_folder
 
     else:
-        print(f"No Files in '{input_folder}', nothing to archive")
+        print(f"\nNo Files in '{input_folder}', nothing to archive")
         return False, None
