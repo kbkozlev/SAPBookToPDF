@@ -1,8 +1,7 @@
-from src.helper.createIniFile import create_ini_file, get_credentials, get_book_id
+from src.helper.createIniFile import create_ini_file, get_credentials
 
 create_ini_file()
 email, password = get_credentials()
-book, arch_name = get_book_id()
 
 
 def is_present(**kwargs) -> tuple:
@@ -22,6 +21,4 @@ def is_present(**kwargs) -> tuple:
 args_dict = {
     'E-mail': email,
     'Password': password,
-    'Book': book,
-    'Archive Name': arch_name
 }
