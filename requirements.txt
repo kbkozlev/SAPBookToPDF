@@ -5,3 +5,4 @@ py7zr==0.20.8
 Requests==2.31.0
 selenium==4.16.0
 Send2Trash==1.8.2
+webdriver_manager==4.0.1
