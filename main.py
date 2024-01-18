@@ -45,28 +45,26 @@ def remove_directories():
                 print(f"\nError: {dir_entry} : {e.strerror}")
 
 
-def main(driver, books):
+def main():
+    all_present, login_data = is_present()
+    if not all_present:
+        return
 
-    for index, book in enumerate(books, start=1):
-        title, url = book['title'], book['href']
-        processing_successful = process_book_images(book_url=url, name=title, drv=driver, i=index, total=len(books))
+    with innit_driver() as driver:
+        email, passwd = login_data
+        success, book_list = init_books(e_mail=email, passwd=passwd, driver=driver)
 
-        if processing_successful:
-            remove_directories()
+        if success:
+            for index, book in enumerate(book_list, start=1):
+                title, url = book['title'], book['href']
+                processing_successful = process_book_images(book_url=url, name=title, drv=driver, i=index,
+                                                            total=len(book_list))
 
-    driver.quit()
+                if processing_successful:
+                    remove_directories()
+
+            print("\nAll Books were processed successfully!")
 
 
 if __name__ == '__main__':
-    all_present, login_data = is_present()
-
-    if not all_present:
-        exit()
-
-    with innit_driver() as mainDriver:
-        email, passwd = login_data
-        success, book_list = init_books(e_mail=email, passwd=passwd, driver=mainDriver)
-
-        if success:
-            main(driver=mainDriver, books=book_list)
-            print("\nAll Books were processed successfully!")
+    main()
