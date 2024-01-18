@@ -19,7 +19,7 @@ def process_book_images(book_url: str, name: str) -> bool:
         ("Creating backup", lambda: create_backup(output_folder, name)),
     ]
 
-    print(f"\nBook: {name} started processing")
+    print(f"\nBook: '{name}' started processing")
 
     for step_name, step_function in steps:
         success, output_folder = step_function()
@@ -27,7 +27,7 @@ def process_book_images(book_url: str, name: str) -> bool:
             print(f"\nStep '{step_name}': Failed")
             return False
 
-    print(f"\nBook: {name} finished processing!")
+    print(f"\nBook: '{name}' finished processing!")
     return True
 
 
