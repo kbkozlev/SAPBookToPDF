@@ -1,6 +1,5 @@
 import py7zr
 import os
-import re
 
 
 def create_backup(input_folder, out_name) -> tuple[bool, str] | tuple[bool, None]:
@@ -10,8 +9,7 @@ def create_backup(input_folder, out_name) -> tuple[bool, str] | tuple[bool, None
         print(f"Folder '{input_folder}' does not exist.")
         return False, None
 
-    clean_name = re.sub(r"[^a-zA-Z0-9\s]", '', out_name)
-    output_name = f"files/{clean_name}.7z"
+    output_name = f"files/{out_name}.7z"
 
     # Get a list of files in the folder and sort them numerically
     files = os.listdir(input_folder)
