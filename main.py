@@ -60,5 +60,3 @@ if __name__ == '__main__':
                     remove_directories()
 
             print("\nAll Books were processed successfully!")
-        else:
-            print("\nNo Books Found!")

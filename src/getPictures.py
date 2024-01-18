@@ -26,10 +26,15 @@ def init_books(e_mail: str, passwd: str) -> tuple[bool, list] | tuple[bool, None
 
     if logged_in:
         success, book_list = get_book_list()
-        cont = input("Continue: y/n? ")
-        if cont.lower() == "y" or " ":
-            return success, book_list if success else (False, None)
+        if len(book_list) == 0:
+            print("\nNo Books found!")
+            return False, None
 
+        cont = input("\nContinue: y/n? ")
+        if cont.lower() in ["y", ""]:
+            return success, book_list if success else (False, None)
+        else:
+            print("\nExiting...")
     return False, None
 
 
