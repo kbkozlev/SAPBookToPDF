@@ -1,5 +1,6 @@
 import os
 import shutil
+from selenium import webdriver
 from src.cropPictures import crop_images
 from src.createBackup import create_backup
 from src.getPictures import get_book_pages
@@ -10,7 +11,7 @@ from src.helper.initDriver import init_driver
 from src.helper.initBooks import init_books
 
 
-def process_book_images(book_url: str, name: str, drv, i: int, total: int) -> bool:
+def process_book_images(book_url: str, name: str, drv: webdriver.Edge, i: int, total: int) -> bool:
     """
     For each book, handles the processing in a predefined sequence.
     :param book_url: The URL to the book to be processed

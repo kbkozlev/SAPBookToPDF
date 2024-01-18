@@ -5,7 +5,7 @@ from selenium.webdriver.edge.service import Service as EdgeService
 from webdriver_manager.microsoft import EdgeChromiumDriverManager
 
 
-def init_driver():
+def init_driver() -> webdriver.Edge:
     """
     Initiates the Selenium "Edge" driver that is going to be used.
     :return:

@@ -1,13 +1,14 @@
 import os
 import time
 import requests
+from selenium import webdriver
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
 
-def get_book_pages(book_url, driver, page_nr=1, max_attempts=3) -> tuple[bool, str] | tuple[bool, None]:
+def get_book_pages(book_url: str, driver: webdriver.Edge, page_nr: int = 1, max_attempts: int = 3) -> tuple[bool, str] | tuple[bool, None]:
     """
     Creates a screenshot of every page of a book
     :param book_url: The URL of the book to be processed
@@ -25,6 +26,7 @@ def get_book_pages(book_url, driver, page_nr=1, max_attempts=3) -> tuple[bool, s
 
         print('\nNavigating to book...')
         driver.get(book_url)
+
     else:
         print(f"\nFailed to load the book page. Received status code: {response.status_code}")
 
