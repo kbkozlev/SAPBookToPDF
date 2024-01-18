@@ -2,17 +2,19 @@ import os
 from send2trash import send2trash
 from src.cropPictures import crop_images
 from src.createBackup import create_backup
-from src.getPictures import init_books, get_book_pages
+from src.getPictures import get_book_pages
 from src.sharpenPictures import sharpen_images_in_folder
 from src.compressPictures import compress_pictures
-from src.helper.isPresent import is_present, args_dict
+from src.helper.isPresent import is_present
+from src.helper.innitDriver import innit_driver
+from src.helper.innitBooks import init_books
 
 
-def process_book_images(book_url: str, name: str) -> bool:
+def process_book_images(book_url: str, name: str, drv) -> bool:
     output_folder = ''
 
     steps = [
-        ("Capturing book pages", lambda: get_book_pages(book_url)),
+        ("Capturing book pages", lambda: get_book_pages(book_url, driver=drv)),
         ("Cropping images", lambda: crop_images(output_folder)),
         ("Sharpening images", lambda: sharpen_images_in_folder(output_folder)),
         ("Compressing images", lambda: compress_pictures(output_folder)),
@@ -44,19 +46,21 @@ def remove_directories():
 
 
 if __name__ == '__main__':
-
-    all_present, present_arguments = is_present(**args_dict)
+    all_present, login_data = is_present()
 
     if all_present:
-        email, passwd = present_arguments
-        suc, book_list = init_books(e_mail=email, passwd=passwd)
+        driver = innit_driver()
+        email, passwd = login_data
+        suc, book_list = init_books(e_mail=email, passwd=passwd, driver=driver)
 
         if suc:
             for book in book_list:
                 title, url = book['title'], book['href']
-                processing_successful = process_book_images(book_url=url, name=title)
+                processing_successful = process_book_images(book_url=url, name=title, drv=driver)
 
                 if processing_successful:
                     remove_directories()
 
             print("\nAll Books were processed successfully!")
+
+        driver.quit()

@@ -1,93 +1,13 @@
 import os
-import re
 import time
 import requests
-from selenium import webdriver
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
-from src.helper.customExceptions import LoginFailedError
-
-# Edge Import
-from selenium.webdriver.edge.service import Service as EdgeService
-from webdriver_manager.microsoft import EdgeChromiumDriverManager
-
-desired_dpi = 2.0
-options = webdriver.EdgeOptions()
-options.add_argument(f"--force-device-scale-factor={desired_dpi}")
-options.add_argument("--headless")
-driver = webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()), options=options)
 
 
-def init_books(e_mail: str, passwd: str) -> tuple[bool, list] | tuple[bool, None]:
-    logged_in = login_sap_press(e_mail=e_mail, passwd=passwd)
-
-    if logged_in:
-        success, book_list = get_book_list()
-        if len(book_list) == 0:
-            print("\nNo Books found!")
-            return False, None
-
-        cont = input("\nContinue: y/n? ")
-        if cont.lower() in ["y", ""]:
-            return success, book_list if success else (False, None)
-        else:
-            print("\nExiting...")
-    return False, None
-
-
-def login_sap_press(e_mail: str, passwd: str) -> bool:
-    driver.get("https://www.sap-press.com/accounts/login/?next=/")
-
-    try:
-        driver.find_element(By.ID, "id_login-username").send_keys(e_mail)
-        driver.find_element(By.ID, "id_login-password").send_keys(passwd)
-        driver.find_element(By.XPATH, "//button[@name='login_submit']").click()
-        print("\nLogging in...")
-
-        # waits for the 'login failed' page to appear, if it doesn't, raises the TimeoutException and continues
-        try:
-            WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//*[@id="login-input"]/div[1]')))
-            raise LoginFailedError()
-        except TimeoutException:
-            print("\nLogged in successfully!")
-            return True
-
-    except LoginFailedError as e:
-        print(e)
-        driver.quit()
-        return False
-
-    except Exception:
-        raise LoginFailedError
-
-
-def get_book_list() -> tuple[bool, None] | tuple[bool, list]:
-    driver.get("https://library.sap-press.com/library/")
-
-    try:
-        product_details = WebDriverWait(driver, 10).until(
-            ec.presence_of_all_elements_located((By.CLASS_NAME, "product-detail")))
-    except NoSuchElementException:
-        return False, None
-
-    result_list = []
-
-    for product_detail in product_details:
-        title_element = product_detail.find_element(By.CLASS_NAME, "titel")
-        title = title_element.text.strip()
-        clean_name = re.sub(r"[^a-zA-Z0-9\s]", '', title)
-        href = title_element.find_element(By.CSS_SELECTOR, "a.read-link").get_attribute('href')
-
-        result_dict = {'title': clean_name, 'href': href}
-        result_list.append(result_dict)
-        print(f"Book: '{clean_name}' added to list.")
-
-    return True, result_list
-
-
-def get_book_pages(book_url, page_nr=1, max_attempts=3) -> tuple[bool, str] | tuple[bool, None]:
+def get_book_pages(book_url, driver, page_nr=1, max_attempts=3) -> tuple[bool, str] | tuple[bool, None]:
     output_directory = 'files/1.rawPictures'
 
     response = requests.get(book_url)
@@ -130,19 +50,16 @@ def get_book_pages(book_url, page_nr=1, max_attempts=3) -> tuple[bool, str] | tu
 
     except TimeoutException:
         print("\nReached the last page.")
-        driver.quit()
         return True, output_directory
 
     except NoSuchElementException:
         if max_attempts > 0:
             print("\nElement not found. Retrying...")
-            return get_book_pages(book_url=book_url, page_nr=page_nr, max_attempts=max_attempts - 1)
+            return get_book_pages(book_url=book_url, driver=driver, page_nr=page_nr, max_attempts=max_attempts - 1)
         else:
             print("\nMax attempts reached. Exiting.")
-            driver.quit()
             return False, None
 
     except Exception as e:
         print(f"\nError: {e}")
-        driver.quit()
         return False, None
