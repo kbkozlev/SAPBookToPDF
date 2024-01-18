@@ -4,7 +4,7 @@ import subprocess
 
 
 def compress_pictures(input_folder) -> tuple[bool, str] | tuple[bool, None]:
-    pngquant_path = 'src/pngquant/pngquant.exe'
+    pngquant_path = 'src/helper/pngquant/pngquant.exe'
     output_folder = 'files/4.finalPictures/'
 
     try:
