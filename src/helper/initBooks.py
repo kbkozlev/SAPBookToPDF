@@ -18,7 +18,7 @@ def init_books(e_mail: str, passwd: str, driver: webdriver.Edge) -> tuple[bool, 
     :param driver: Driver object
     :return:
     """
-    logged_in = login_sap_press(e_mail=e_mail, passwd=passwd, driver=driver)
+    logged_in = login_sap_press(email=e_mail, passwd=passwd, driver=driver)
 
     if logged_in:
         success, book_list = get_book_list(driver=driver)
@@ -34,36 +34,50 @@ def init_books(e_mail: str, passwd: str, driver: webdriver.Edge) -> tuple[bool, 
     return False, None
 
 
-def login_sap_press(e_mail: str, passwd: str, driver: webdriver.Edge) -> bool:
+def login_sap_press(email: str, passwd: str, driver: webdriver.Edge, max_retries: int = 3) -> bool:
     """
-    Handles the logging in to the website
-    :param e_mail: E-mail to be used for signing in
+    Handles the logging in to the website with retry mechanism
+    :param email: E-mail to be used for signing in
     :param passwd: Password to be used for signing in
     :param driver: Driver object
-    :return:
+    :param max_retries: Maximum number of login retry attempts
+    :return: True if login is successful, False otherwise
     """
-    driver.get("https://www.sap-press.com/accounts/login/?next=/")
-
-    try:
-        driver.find_element(By.ID, "id_login-username").send_keys(e_mail)
-        driver.find_element(By.ID, "id_login-password").send_keys(passwd)
-        driver.find_element(By.XPATH, "//button[@name='login_submit']").click()
-        print("\nLogging in...")
-
-        # waits for the 'login failed' page to appear, if it doesn't, raises the TimeoutException and continues
+    for attempt in range(1, max_retries + 1):
         try:
-            WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//*[@id="login-input"]/div[1]')))
-            raise LoginFailedError()
-        except TimeoutException:
-            print("\nLogged in successfully!")
-            return True
+            driver.get("https://www.sap-press.com/accounts/login/?next=/")
+            driver.find_element(By.ID, "id_login-username").send_keys(email)
+            driver.find_element(By.ID, "id_login-password").send_keys(passwd)
+            driver.find_element(By.XPATH, "//button[@name='login_submit']").click()
 
-    except LoginFailedError as e:
-        print(e)
-        return False
+            print(f"\nLogging in (Attempt {attempt}/{max_retries})...")
 
-    except Exception:
-        raise LoginFailedError
+            # Waits for the 'login failed' page to appear; raises TimeoutException if it doesn't
+            try:
+                WebDriverWait(driver, 10).until(
+                    ec.presence_of_element_located((By.XPATH, '//*[@id="login-input"]/div[1]')))
+                raise LoginFailedError("Login failed!")
+
+            except TimeoutException:
+                # If no TimeoutException is raised, it means the login was successful
+                print("\nLogged in successfully!")
+                return True
+
+        except NoSuchElementException as e:
+            print(f"Element not found: {e}")
+            raise LoginFailedError("Login failed - Element not found")
+
+        except LoginFailedError as e:
+            print(e)
+            # If it's the last attempt, return False; otherwise, retry
+            if attempt == max_retries:
+                return False
+
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+            raise LoginFailedError("Login failed - Unexpected error")
+
+    return False  # This line will be reached only if max_retries attempts are unsuccessful
 
 
 def get_book_list(driver: webdriver.Edge) -> tuple[bool, None] | tuple[bool, list]:

@@ -28,6 +28,7 @@ def get_book_pages(book_url: str, driver: webdriver.Edge, page_nr: int = 1, max_
 
     else:
         print(f"\nFailed to load the book page. Received status code: {response.status_code}")
+        return False, None
 
     time.sleep(2)
 
@@ -45,30 +46,30 @@ def get_book_pages(book_url: str, driver: webdriver.Edge, page_nr: int = 1, max_
 
     driver.set_window_size(1500, 1800)
 
-    try:
-        while True:
-            element = WebDriverWait(driver, 5).until(
-                ec.visibility_of_element_located(
-                    (By.XPATH, '/html/body/div[5]/div/div/div[4]/div[1]/div[1]/ul/li[8]/a[2]/span')))
+    for attempt in range(1, max_attempts + 1):
+        try:
+            while True:
+                element = WebDriverWait(driver, 5).until(
+                    ec.visibility_of_element_located(
+                        (By.XPATH, '/html/body/div[5]/div/div/div[4]/div[1]/div[1]/ul/li[8]/a[2]/span')))
 
-            time.sleep(4)  # timer to wait for the full loading of the page (adjust based on internet quality)
-            driver.save_screenshot(f'{output_folder}/{str(page_nr).zfill(2)}.png')
-            print(f"Page: '{page_nr}' copied")
-            page_nr += 1
-            driver.execute_script("arguments[0].click();", element)
+                time.sleep(4)  # timer to wait for the full loading of the page (adjust based on internet quality)
+                driver.save_screenshot(f'{output_folder}/{str(page_nr).zfill(2)}.png')
+                print(f"Page: '{page_nr}' copied")
+                page_nr += 1
+                driver.execute_script("arguments[0].click();", element)
 
-    except TimeoutException:
-        print("\nReached the last page.\n")
-        return True, output_folder
+        except TimeoutException:
+            print("\nReached the last page.\n")
+            return True, output_folder
 
-    except NoSuchElementException:
-        if max_attempts > 0:
-            print("\nElement not found. Retrying...")
-            return get_book_pages(book_url=book_url, driver=driver, page_nr=page_nr, max_attempts=max_attempts - 1)
-        else:
-            print("\nMax attempts reached. Exiting.")
+        except NoSuchElementException:
+            if attempt < max_attempts:
+                print(f"\nElement not found. Retrying (Attempt {attempt}/{max_attempts})...")
+            else:
+                print("\nMax attempts reached. Exiting.")
+                return False, None
+
+        except Exception as e:
+            print(f"\nError: {e}")
             return False, None
-
-    except Exception as e:
-        print(f"\nError: {e}")
-        return False, None
