@@ -54,13 +54,14 @@ def get_book_pages(book_url: str, driver: webdriver.Edge, page_nr: int = 1, max_
                         (By.XPATH, '/html/body/div[5]/div/div/div[4]/div[1]/div[1]/ul/li[8]/a[2]/span')))
 
                 time.sleep(4)  # timer to wait for the full loading of the page (adjust based on internet quality)
-                driver.save_screenshot(f'{output_folder}/{str(page_nr).zfill(2)}.png')
-                print(f"Page: '{page_nr}' copied")
+                image_name = f"{str(page_nr).zfill(2)}.png"
+                driver.save_screenshot(f'{output_folder}/{image_name}')
+                print(f"Image: '{image_name}' saved.")
                 page_nr += 1
                 driver.execute_script("arguments[0].click();", element)
 
         except TimeoutException:
-            print("\nReached the last page.\n")
+            print(f"\nReached the last page, all pictures have been saved to folder '{output_folder}'.\n")
             return True, output_folder
 
         except NoSuchElementException:
