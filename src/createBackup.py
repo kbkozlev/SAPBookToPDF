@@ -10,27 +10,31 @@ def create_backup(input_folder: str, out_name: str) -> tuple[bool, str] | tuple[
     :return:
     """
 
-    if not os.path.exists(input_folder):
-        print(f"\nFolder '{input_folder}' does not exist.")
-        return False, None
+    try:
+        if not os.path.exists(input_folder):
+            print(f"\nFolder '{input_folder}' does not exist.")
+            return False, None
 
-    output_name = f"files/{out_name}.7z"
+        output_name = f"files/{out_name}.7z"
 
-    # Get a list of files in the folder and sort them numerically
-    files = os.listdir(input_folder)
-    files.sort(key=lambda x: int(os.path.splitext(x)[0]))
+        # Get a list of files in the folder and sort them numerically
+        files = os.listdir(input_folder)
+        files.sort(key=lambda x: int(os.path.splitext(x)[0]))
 
-    # Create a 7z archive
-    if len(files) > 0:
-        with py7zr.SevenZipFile(output_name, 'w') as archive:
-            for file in files:
-                file_path = os.path.join(input_folder, file)
-                archive.write(file_path, os.path.relpath(file_path, input_folder))
-                print(f"Image '{file}' archived")
+        # Create a 7z archive
+        if len(files) > 0:
+            with py7zr.SevenZipFile(output_name, 'w') as archive:
+                for file in files:
+                    file_path = os.path.join(input_folder, file)
+                    archive.write(file_path, os.path.relpath(file_path, input_folder))
+                    print(f"Image '{file}' archived")
 
-        print(f"\nFolder '{input_folder}' successfully compressed to '{output_name}'.\n")
-        return True, input_folder
+            print(f"\nFolder '{input_folder}' successfully compressed to '{output_name}'.\n")
+            return True, input_folder
 
-    else:
-        print(f"\nNo Files in '{input_folder}', nothing to archive\n")
+        else:
+            raise FileNotFoundError(f"\nNo Files in '{input_folder}', nothing to archive.")
+
+    except Exception as e:
+        print(f"\nUnexpected error: {e}")
         return False, None

@@ -45,12 +45,12 @@ def login_sap_press(email: str, passwd: str, driver: webdriver.Edge, max_retries
     """
     for attempt in range(1, max_retries + 1):
         try:
+            print(f"Logging in (Attempt {attempt}/{max_retries})...")
+
             driver.get("https://www.sap-press.com/accounts/login/?next=/")
             driver.find_element(By.ID, "id_login-username").send_keys(email)
             driver.find_element(By.ID, "id_login-password").send_keys(passwd)
             driver.find_element(By.XPATH, "//button[@name='login_submit']").click()
-
-            print(f"\nLogging in (Attempt {attempt}/{max_retries})...")
 
             # Waits for the 'login failed' page to appear; raises TimeoutException if it doesn't
             try:
@@ -60,24 +60,23 @@ def login_sap_press(email: str, passwd: str, driver: webdriver.Edge, max_retries
 
             except TimeoutException:
                 # If no TimeoutException is raised, it means the login was successful
-                print("\nLogged in successfully!")
+                print("\nLogged in successfully!\n")
                 return True
 
         except NoSuchElementException as e:
-            print(f"Element not found: {e}")
-            raise LoginFailedError("Login failed - Element not found")
+            failed_element = e.msg
+            print(f"Login failed - {failed_element}\n")
 
         except LoginFailedError as e:
             print(e)
-            # If it's the last attempt, return False; otherwise, retry
+
             if attempt == max_retries:
                 return False
 
         except Exception as e:
-            print(f"An unexpected error occurred: {e}")
-            raise LoginFailedError("Login failed - Unexpected error")
+            print(f"Login failed - Unexpected error: {e}")
 
-    return False  # This line will be reached only if max_retries attempts are unsuccessful
+    return False
 
 
 def get_book_list(driver: webdriver.Edge) -> tuple[bool, None] | tuple[bool, list]:
@@ -88,23 +87,26 @@ def get_book_list(driver: webdriver.Edge) -> tuple[bool, None] | tuple[bool, lis
     :return:
     """
     driver.get("https://library.sap-press.com/library/")
+    result_list = []
 
     try:
         product_details = WebDriverWait(driver, 10).until(
             ec.presence_of_all_elements_located((By.CLASS_NAME, "product-detail")))
-    except NoSuchElementException:
-        return False, None
 
-    result_list = []
+        for product_detail in product_details:
+            title_element = product_detail.find_element(By.CLASS_NAME, "titel")
+            title = re.sub(r"[^a-zA-Z0-9\s]", '', title_element.text.strip())
+            href = title_element.find_element(By.CSS_SELECTOR, "a.read-link").get_attribute('href')
 
-    for product_detail in product_details:
-        title_element = product_detail.find_element(By.CLASS_NAME, "titel")
-        title = title_element.text.strip()
-        clean_name = re.sub(r"[^a-zA-Z0-9\s]", '', title)
-        href = title_element.find_element(By.CSS_SELECTOR, "a.read-link").get_attribute('href')
+            result_dict = {'title': title, 'href': href}
+            result_list.append(result_dict)
+            print(f"Book: '{title}' added to list.")
 
-        result_dict = {'title': clean_name, 'href': href}
-        result_list.append(result_dict)
-        print(f"Book: '{clean_name}' added to list.")
+        return True, result_list
 
-    return True, result_list
+    except TimeoutException:
+        try:
+            driver.find_element(By.CLASS_NAME, "product-detail")
+        except NoSuchElementException as e:
+            print(e.msg)
+            return False, result_list
