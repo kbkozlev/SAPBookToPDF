@@ -4,7 +4,7 @@ import numpy as np
 from concurrent.futures import ProcessPoolExecutor
 
 
-def __crop_image(args):
+def __crop_image(args: list):
     image_path, output_path, coordinates = args
     try:
         with Image.open(image_path) as img:
@@ -17,7 +17,13 @@ def __crop_image(args):
         return False
 
 
-def crop_images(input_folder, size):
+def crop_images(input_folder: str, size: int):
+    """
+    Handles the cropping of the picture, depending on the screenshot size.
+    :param input_folder: Path to the input folder
+    :param size: The size of the screenshot, taken from the 'get_book_pages' function
+    :return:
+    """
     coordinates = (0, 0, 0, 0)
 
     if size == 4:

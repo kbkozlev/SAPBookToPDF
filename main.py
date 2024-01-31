@@ -32,7 +32,7 @@ def process_book_images(book_url: str, name: str, drv: webdriver.Edge, i: int, t
         ("Creating backup", lambda: create_backup(input_folder=output_folder, out_name=name)),
     ]
 
-    print(f"\nBook [ {i} | {total} ]: '{name}' started processing")
+    print(f"\nBook [ {i} | {total} ]: '{name}' started processing.")
 
     for step_name, step_function in steps:
         if step_name == 'Capturing book pages':
@@ -41,12 +41,12 @@ def process_book_images(book_url: str, name: str, drv: webdriver.Edge, i: int, t
             ok, output_folder = step_function()
 
         if not ok:
-            print(f"\nStep '{step_name}': Failed")
+            print(f"\nStep '{step_name}': failed.")
             return False
 
     remove_directories()
     remove_book_from_db(title=name)
-    print(f"\nBook [ {i} | {total} ]: '{name}' finished processing!")
+    print(f"\nBook [ {i} | {total} ]: '{name}' finished processing.")
     return True
 
 

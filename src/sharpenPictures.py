@@ -5,7 +5,12 @@ import shutil
 from concurrent.futures import ProcessPoolExecutor
 
 
-def __sharpen_image(args):
+def __sharpen_image(args: tuple):
+    """
+    Private function, handles the sharpening of the images with a kernel.
+    :param args: Tuple of input and output paths.
+    :return:
+    """
     input_path, output_path = args
     try:
         img = cv2.imread(input_path)
@@ -36,8 +41,8 @@ def __sharpen_image(args):
 
 def sharpen_images_in_folder(input_folder: str) -> tuple[bool, str] | tuple[bool, None]:
     """
-    Uses a kernel to sharpen the images
-    :param input_folder:
+    Uses a kernel to sharpen the images.
+    :param input_folder: Path to the input folder
     :return:
     """
     # Create output folder if it doesn't exist
