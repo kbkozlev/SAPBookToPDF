@@ -8,7 +8,7 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
 
-def get_book_pages(book_url: str, driver: webdriver.Edge, page_nr: int = 1) -> tuple[bool, str] | tuple[bool, None]:
+def get_book_pages(book_url: str, driver: webdriver.Edge, page_nr: int = 1) -> tuple[bool, None, None] | tuple[bool, str, int]:
     """
     Creates a screenshot of every page of a book
     :param book_url: The URL of the book to be processed
@@ -17,17 +17,18 @@ def get_book_pages(book_url: str, driver: webdriver.Edge, page_nr: int = 1) -> t
     :return:
     """
     output_folder = 'files/1.rawPictures'
+    size = 0
 
     response = requests.get(book_url)
     if response.status_code == 200:
         os.makedirs(output_folder, exist_ok=True)
 
-        print('\nNavigating to book...')
+        print('\nNavigating to book...\n')
         driver.get(book_url)
 
     else:
         print(f"\nFailed to load the book page. Received status code: {response.status_code}")
-        return False, None
+        return False, None, None
 
     time.sleep(2)
 
@@ -38,10 +39,18 @@ def get_book_pages(book_url: str, driver: webdriver.Edge, page_nr: int = 1) -> t
 
     time.sleep(2)
     try:
+        # Change size of book page to 4
         WebDriverWait(driver, 10).until(
             ec.element_to_be_clickable((By.XPATH, '//*[@id="reader_nav"]/ul/li[3]/ul/li[4]/a'))).click()
+        size = 4
     except TimeoutException:
-        pass
+        try:
+            # Change size of book page to 3
+            WebDriverWait(driver, 10).until(
+                ec.element_to_be_clickable((By.XPATH, '//*[@id="reader_nav"]/ul/li[3]/ul/li[3]/a'))).click()
+            size = 3
+        except TimeoutException:
+            pass
 
     driver.set_window_size(1500, 1800)
 
@@ -60,8 +69,8 @@ def get_book_pages(book_url: str, driver: webdriver.Edge, page_nr: int = 1) -> t
 
     except TimeoutException:
         print(f"\nReached the last page, all pictures have been saved to folder '{output_folder}'.\n")
-        return True, output_folder
+        return True, output_folder, size
 
     except Exception as e:
         print(f"\nError: {e}")
-        return False, None
+        return False, None, None

@@ -1,7 +1,7 @@
 import os
 import configparser
 
-file_path = 'src/helper/info.ini'
+file_path = 'src/helper/files/info.ini'
 
 
 def create_ini_file() -> bool:

@@ -29,7 +29,7 @@ def create_backup(input_folder: str, out_name: str) -> tuple[bool, str] | tuple[
                     archive.write(file_path, os.path.relpath(file_path, input_folder))
                     print(f"Image '{file}' archived")
 
-            print(f"\nFolder '{input_folder}' successfully compressed to '{output_name}'.\n")
+            print(f"\nFolder '{input_folder}' successfully archived to '{output_name}'.\n")
             return True, input_folder
 
         else:

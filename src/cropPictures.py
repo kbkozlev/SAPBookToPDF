@@ -2,13 +2,19 @@ from PIL import Image
 import os
 
 
-def crop_images(input_folder: str) -> tuple[bool, str] | tuple[bool, None]:
+def crop_images(input_folder: str, size) -> tuple[bool, str] | tuple[bool, None]:
     """
     Crops images from the input folder based on coordinates and saves cropped images to the output folder.
     :param input_folder:
+    :param size
     :return:
     """
-    coordinates = (482, 282, 2490, 3182)
+    coordinates = (0, 0, 0, 0)
+
+    if size == 4:
+        coordinates = (482, 282, 2490, 3182)
+    elif size == 3:
+        coordinates = (547, 282, 2417, 3182)
 
     # Create output folder if it doesn't exist
     output_folder = 'files/2.croppedPictures'

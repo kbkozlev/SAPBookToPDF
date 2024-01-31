@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 from src.helper.customExceptions import LoginFailedError
+from src.helper.bookDataBase import insert_book_in_db, get_book_list_from_db, create_db
 
 
 def init_books(e_mail: str, passwd: str, driver: webdriver.Edge) -> tuple[bool, list] | tuple[bool, None]:
@@ -21,12 +22,22 @@ def init_books(e_mail: str, passwd: str, driver: webdriver.Edge) -> tuple[bool, 
     logged_in = login_sap_press(email=e_mail, passwd=passwd, driver=driver)
 
     if logged_in:
-        success, book_list = get_book_list(driver=driver)
+        book_list = get_book_list_from_db()
+        if len(book_list) > 0:
+            success = True
+            for book in book_list:
+                print(f"Book: '{book['title']}' in current list")
+
+            cont = input(f"\n[ #{len(book_list)} ] books found in db, continue: y/n? ")
+            if cont.lower() in ["y", ""]:
+                return success, book_list if success else (False, None)
+
+        success, book_list = get_book_list_from_web(driver=driver)
         if len(book_list) == 0:
             print("\nNo Books found!")
             return False, None
 
-        cont = input("\nContinue: y/n? ")
+        cont = input(f"\n[ #{len(book_list)} ] books found online, continue: y/n? ")
         if cont.lower() in ["y", ""]:
             return success, book_list if success else (False, None)
         else:
@@ -79,7 +90,7 @@ def login_sap_press(email: str, passwd: str, driver: webdriver.Edge, max_retries
     return False
 
 
-def get_book_list(driver: webdriver.Edge) -> tuple[bool, None] | tuple[bool, list]:
+def get_book_list_from_web(driver: webdriver.Edge) -> tuple[bool, None] | tuple[bool, list]:
     """
     For all elements with class "product-detail" in the page,
     it fetches the "name" and "href" element and stores them in a list of dictionaries
@@ -87,6 +98,7 @@ def get_book_list(driver: webdriver.Edge) -> tuple[bool, None] | tuple[bool, lis
     :return:
     """
     driver.get("https://library.sap-press.com/library/")
+    create_db()
     result_list = []
 
     try:
@@ -95,13 +107,13 @@ def get_book_list(driver: webdriver.Edge) -> tuple[bool, None] | tuple[bool, lis
 
         for product_detail in product_details:
             title_element = product_detail.find_element(By.CLASS_NAME, "titel")
-            title = re.sub(r"[^a-zA-Z0-9\s]", '', title_element.text.strip())
+            title = re.sub(r"[^a-zA-Z0-9\s-]", '', title_element.text.strip())
             href = title_element.find_element(By.CSS_SELECTOR, "a.read-link").get_attribute('href')
 
-            result_dict = {'title': title, 'href': href}
-            result_list.append(result_dict)
+            insert_book_in_db(title=title, href=href)
             print(f"Book: '{title}' added to list.")
 
+        result_list = get_book_list_from_db()
         return True, result_list
 
     except TimeoutException:

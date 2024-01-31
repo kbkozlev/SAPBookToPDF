@@ -9,6 +9,7 @@ from src.compressPictures import compress_pictures
 from src.helper.isPresent import is_present
 from src.helper.initDriver import init_driver
 from src.helper.initBooks import init_books
+from src.helper.bookDataBase import remove_book_from_db
 
 
 def process_book_images(book_url: str, name: str, drv: webdriver.Edge, i: int, total: int) -> bool:
@@ -24,22 +25,27 @@ def process_book_images(book_url: str, name: str, drv: webdriver.Edge, i: int, t
     output_folder = ''
 
     steps = [
-        ("Capturing book pages", lambda: get_book_pages(book_url, driver=drv)),
-        ("Cropping images", lambda: crop_images(output_folder)),
-        ("Sharpening images", lambda: sharpen_images_in_folder(output_folder)),
-        ("Compressing images", lambda: compress_pictures(output_folder)),
-        ("Creating backup", lambda: create_backup(output_folder, name)),
+        ("Capturing book pages", lambda: get_book_pages(book_url=book_url, driver=drv)),
+        ("Cropping images", lambda: crop_images(input_folder=output_folder, size=size)),
+        ("Sharpening images", lambda: sharpen_images_in_folder(input_folder=output_folder)),
+        ("Compressing images", lambda: compress_pictures(input_folder=output_folder)),
+        ("Creating backup", lambda: create_backup(input_folder=output_folder, out_name=name)),
     ]
 
     print(f"\nBook [ {i} | {total} ]: '{name}' started processing")
 
     for step_name, step_function in steps:
-        ok, output_folder = step_function()
+        if step_name == 'Capturing book pages':
+            ok, output_folder, size = step_function()
+        else:
+            ok, output_folder = step_function()
+
         if not ok:
             print(f"\nStep '{step_name}': Failed")
             return False
 
     remove_directories()
+    remove_book_from_db(title=name)
     print(f"\nBook [ {i} | {total} ]: '{name}' finished processing!")
     return True
 
