@@ -7,7 +7,7 @@ from src.getPictures import get_book_pages
 from src.sharpenPictures import sharpen_images_in_folder
 from src.compressPictures import compress_pictures
 from src.helper.isPresent import is_present
-from src.helper.initDriver import init_driver
+from src.helper.initDriver import init_driver, open_new_tab, close_current_tab
 from src.helper.initBooks import init_books
 from src.helper.bookDataBase import remove_book_from_db
 
@@ -26,10 +26,10 @@ def process_book_images(book_url: str, name: str, drv: webdriver.Edge, i: int, t
 
     steps = [
         ("Capturing book pages", lambda: get_book_pages(book_url=book_url, driver=drv)),
-        ("Cropping images", lambda: crop_images(input_folder=output_folder, size=size)),
-        ("Sharpening images", lambda: sharpen_images_in_folder(input_folder=output_folder)),
-        ("Compressing images", lambda: compress_pictures(input_folder=output_folder)),
-        ("Creating backup", lambda: create_backup(input_folder=output_folder, out_name=name)),
+        # ("Cropping images", lambda: crop_images(input_folder=output_folder, size=size)),
+        # ("Sharpening images", lambda: sharpen_images_in_folder(input_folder=output_folder)),
+        # ("Compressing images", lambda: compress_pictures(input_folder=output_folder)),
+        # ("Creating backup", lambda: create_backup(input_folder=output_folder, out_name=name)),
     ]
 
     print(f"\nBook [ {i} | {total} ]: '{name}' started processing.")
@@ -45,7 +45,7 @@ def process_book_images(book_url: str, name: str, drv: webdriver.Edge, i: int, t
             return False
 
     remove_directories()
-    remove_book_from_db(title=name)
+    # remove_book_from_db(title=name)
     print(f"\nBook [ {i} | {total} ]: '{name}' finished processing.")
     return True
 
@@ -85,8 +85,10 @@ def main() -> None:
             return
 
         for index, book in enumerate(book_list, start=1):
+            open_new_tab(driver)
             title, url = book['title'], book['href']
             finished = process_book_images(book_url=url, name=title, drv=driver, i=index, total=len(book_list))
+            close_current_tab(driver)
 
             if not finished:
                 print(f"\nBook processing terminated for book: '{title}'")

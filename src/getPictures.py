@@ -23,8 +23,11 @@ def get_book_pages(book_url: str, driver: webdriver.Edge, page_nr: int = 1) -> t
     if response.status_code == 200:
         os.makedirs(output_folder, exist_ok=True)
 
-        print('\nNavigating to book...\n')
-        driver.get(book_url)
+        try:
+            print('\nNavigating to book...\n')
+            driver.get(book_url)
+        except Exception as e:
+            print(f"Error: {e}")
 
     else:
         print(f"\nFailed to load the book page. Received status code: {response.status_code}")
@@ -68,6 +71,7 @@ def get_book_pages(book_url: str, driver: webdriver.Edge, page_nr: int = 1) -> t
             print(f"Image: '{image_name}' saved.")
             page_nr += 1
             driver.execute_script("arguments[0].click();", element)
+            # raise TimeoutException  # for debugging purposes
 
     except TimeoutException:
         print(f"\nReached the last page, all pictures have been saved to folder '{output_folder}'.\n")

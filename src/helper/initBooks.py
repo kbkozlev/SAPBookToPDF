@@ -23,7 +23,7 @@ def init_books(e_mail: str, passwd: str, driver: webdriver.Edge) -> tuple[bool, 
 
     if logged_in:
         book_list = get_book_list_from_db()
-        if len(book_list) > 0:
+        if len(book_list) > 0:  # if the db has books use those y/n
             success = True
             for book in book_list:
                 print(f"Book: '{book['title']}' in current list")
@@ -32,7 +32,7 @@ def init_books(e_mail: str, passwd: str, driver: webdriver.Edge) -> tuple[bool, 
             if cont.lower() in ["y", ""]:
                 return success, book_list if success else (False, None)
 
-        success, book_list = get_book_list_from_web(driver=driver)
+        success, book_list = get_book_list_from_web(driver=driver)  # else fetch the books from the website
         if len(book_list) == 0:
             print("\nNo Books found!")
             return False, None
@@ -107,7 +107,7 @@ def get_book_list_from_web(driver: webdriver.Edge) -> tuple[bool, None] | tuple[
 
         for product_detail in product_details:
             title_element = product_detail.find_element(By.CLASS_NAME, "titel")
-            title = re.sub(r"[^a-zA-Z0-9\s-]", '', title_element.text.strip())
+            title = re.sub(r"[/\\:*?\"<>|]", '', title_element.text.strip())
             href = title_element.find_element(By.CSS_SELECTOR, "a.read-link").get_attribute('href')
 
             insert_book_in_db(title=title, href=href)
