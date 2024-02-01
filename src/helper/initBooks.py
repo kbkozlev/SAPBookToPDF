@@ -28,8 +28,14 @@ def init_books(e_mail: str, passwd: str, driver: webdriver.Edge) -> tuple[bool, 
                 print(f"Book: '{book['title']}' in current list")
 
             cont = input(f"\n[ #{len(book_list_db)} ] books found in db, continue: y/n? ")
-            if cont.lower() in ["y", ""]:
-                return success, book_list_db if success else (False, None)
+            if cont.strip().lower() in ["y", ""]:
+                return success, book_list_db
+
+            elif cont.strip().lower() in ["n"]:
+                save = input(f"Do you want to save the current database and exit, or fetch a new one? s/f? ")
+                if save.strip().lower() in ["s", ""]:
+                    print("\nExiting...")
+                    return False, None
 
         success, book_list = get_book_list_from_web(driver=driver)  # else fetch the books from the website
         if len(book_list) == 0:
@@ -37,7 +43,7 @@ def init_books(e_mail: str, passwd: str, driver: webdriver.Edge) -> tuple[bool, 
             return False, None
 
         cont = input(f"\n[ #{len(book_list)} ] books found online, continue: y/n? ")
-        if cont.lower() in ["y", ""]:
+        if cont.strip().lower() in ["y", ""]:
             return success, book_list if success else (False, None)
         else:
             print("\nExiting...")
