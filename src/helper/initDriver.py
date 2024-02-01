@@ -24,19 +24,3 @@ def init_driver() -> webdriver.Edge:
         yield driver
     finally:
         driver.quit()
-
-
-def open_new_tab(driver):
-    # Execute JavaScript to open a new tab
-    driver.execute_script("window.open('', '_blank');")
-
-    # Switch to the newly opened tab
-    driver.switch_to.window(driver.window_handles[-1])
-
-
-def close_current_tab(driver):
-    # Close the current tab using JavaScript
-    driver.execute_script("window.close();")
-
-    # Switch back to the main tab
-    driver.switch_to.window(driver.window_handles[0])
