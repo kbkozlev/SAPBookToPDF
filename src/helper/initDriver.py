@@ -16,7 +16,7 @@ def init_driver() -> webdriver.Edge:
     options = webdriver.EdgeOptions()
     options.add_argument(f"--force-device-scale-factor={desired_dpi}")
     options.add_argument("--inprivate")
-    # options.add_argument("--headless")
+    options.add_argument("--headless")
 
     driver = webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()), options=options)
 
