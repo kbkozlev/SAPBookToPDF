@@ -22,15 +22,14 @@ def init_books(e_mail: str, passwd: str, driver: webdriver.Edge) -> tuple[bool, 
     logged_in = login_sap_press(email=e_mail, passwd=passwd, driver=driver)
 
     if logged_in:
-        book_list = get_book_list_from_db()
-        if len(book_list) > 0:  # if the db has books use those y/n
-            success = True
-            for book in book_list:
+        success, book_list_db = get_books_db(driver=driver)
+        if len(book_list_db) > 0:  # if the db has books use those y/n
+            for book in book_list_db:
                 print(f"Book: '{book['title']}' in current list")
 
-            cont = input(f"\n[ #{len(book_list)} ] books found in db, continue: y/n? ")
+            cont = input(f"\n[ #{len(book_list_db)} ] books found in db, continue: y/n? ")
             if cont.lower() in ["y", ""]:
-                return success, book_list if success else (False, None)
+                return success, book_list_db if success else (False, None)
 
         success, book_list = get_book_list_from_web(driver=driver)  # else fetch the books from the website
         if len(book_list) == 0:
@@ -109,7 +108,6 @@ def get_book_list_from_web(driver: webdriver.Edge) -> tuple[bool, None] | tuple[
             title_element = product_detail.find_element(By.CLASS_NAME, "titel")
             title = re.sub(r"[/\\:*?\"<>|]", '', title_element.text.strip())
             href = title_element.find_element(By.CSS_SELECTOR, "a.read-link").get_attribute('href')
-
             insert_book_in_db(title=title, href=href)
             print(f"Book: '{title}' added to list.")
 
@@ -118,7 +116,19 @@ def get_book_list_from_web(driver: webdriver.Edge) -> tuple[bool, None] | tuple[
 
     except TimeoutException:
         try:
-            driver.find_element(By.CLASS_NAME, "product-detail")
+            get_book_list_from_web(driver=driver)
         except NoSuchElementException as e:
             print(e.msg)
             return False, result_list
+
+
+def get_books_db(driver: webdriver.Edge) -> tuple[bool, list]:
+    """
+    Without this function the code will not work, otherwise makes no sense - MAGIC!\n
+    I managed to track the issue down to the driver having to be called again
+    :param driver:
+    :return:
+    """
+    driver.get("https://library.sap-press.com/library/")
+    res = get_book_list_from_db()
+    return True, res

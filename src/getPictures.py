@@ -71,7 +71,6 @@ def get_book_pages(book_url: str, driver: webdriver.Edge, page_nr: int = 1) -> t
             print(f"Image: '{image_name}' saved.")
             page_nr += 1
             driver.execute_script("arguments[0].click();", element)
-            # raise TimeoutException  # for debugging purposes
 
     except TimeoutException:
         print(f"\nReached the last page, all pictures have been saved to folder '{output_folder}'.\n")

@@ -12,7 +12,7 @@ def create_db():
         json.dump([], file)
 
 
-def __load_data() -> list[dict[str, str]]:
+def __load_data() -> list:
     """
     Loads the full JSON db and returns a list of dictionaries containing book information.
     :return:
@@ -59,7 +59,7 @@ def remove_book_from_db(title: str):
     print(f"\nBook: '{title}' removed from db.")
 
 
-def get_book_list_from_db():
+def get_book_list_from_db() -> list:
     """
     Calls private method '__load_data' and returns it
     :return:
