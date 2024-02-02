@@ -60,7 +60,7 @@ def get_book_pages(book_url: str, driver: webdriver.Edge, page_nr: int = 1) -> t
 
     try:
         while True:
-            # Click next-page button
+            # Find next page button
             element = WebDriverWait(driver, 5).until(
                 ec.visibility_of_element_located(
                     (By.XPATH, '/html/body/div[5]/div/div/div[4]/div[1]/div[1]/ul/li[8]/a[2]/span')))
@@ -70,6 +70,7 @@ def get_book_pages(book_url: str, driver: webdriver.Edge, page_nr: int = 1) -> t
             driver.save_screenshot(f'{output_folder}/{image_name}')
             print(f"Image: '{image_name}' saved.")
             page_nr += 1
+            # Click next-page button
             driver.execute_script("arguments[0].click();", element)
 
     except TimeoutException:
