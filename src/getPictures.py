@@ -8,9 +8,10 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
 
-def get_book_pages(book_url: str, driver: webdriver.Edge, page_nr: int = 1) -> tuple[bool, None, None] | tuple[bool, str, int]:
+def get_book_pages(book_url: str, cover: str, driver: webdriver.Edge, page_nr: int = 1) -> tuple[bool, None, None] | tuple[bool, str, int]:
     """
     Creates a screenshot of every page of a book
+    :param cover: The url for the cover of the book
     :param book_url: The URL of the book to be processed
     :param driver: Driver object
     :param page_nr: Page number used for the name of the screenshot
@@ -19,21 +20,29 @@ def get_book_pages(book_url: str, driver: webdriver.Edge, page_nr: int = 1) -> t
     output_folder = 'files/1.rawPictures'
     size = 0
 
-    response = requests.get(book_url)
-    if response.status_code == 200:
+    book_response = requests.get(book_url)
+    if book_response.status_code == 200:
         os.makedirs(output_folder, exist_ok=True)
 
         try:
             print('\nNavigating to book...\n')
+            #  Open book url
             driver.get(book_url)
+
+            #  Fetch the cover of the book and download
+            cover_response = requests.get(cover)
+            cover_name = '00.png'
+            if cover_response.status_code == 200:
+                with open(f'{output_folder}/{cover_name}', 'wb') as file:
+                    file.write(cover_response.content)
+                print(f"Image: '{cover_name}' saved.")
+
         except Exception as e:
             print(f"Error: {e}")
 
     else:
-        print(f"\nFailed to load the book page. Received status code: {response.status_code}")
+        print(f"\nFailed to load the book page. Received status code: {book_response.status_code}")
         return False, None, None
-
-    time.sleep(2)
 
     try:
         # decline last read page, and start from the beginning

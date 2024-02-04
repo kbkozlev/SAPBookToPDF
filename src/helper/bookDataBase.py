@@ -35,15 +35,16 @@ def __save_data(data: list[dict[str, str]]):
         json.dump(data, file, indent=2)
 
 
-def insert_book_in_db(title: str, href: str):
+def insert_book_in_db(title: str, href: str, cover: str):
     """
     Insert new entry in the db.
+    :param cover: Cover of the book
     :param title: The title of the book
     :param href: The URL to the book
     :return:
     """
     data = __load_data()
-    data.append({'title': title, 'href': href})
+    data.append({'title': title, 'href': href, 'cover': cover})
     __save_data(data)
 
 

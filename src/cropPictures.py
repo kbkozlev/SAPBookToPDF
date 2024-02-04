@@ -1,20 +1,29 @@
-from PIL import Image
 import os
+import shutil
 import numpy as np
+from PIL import Image
 from concurrent.futures import ProcessPoolExecutor
 
 
-def __crop_image(args: list):
+def __crop_image(args: list) -> bool:
     image_path, output_path, coordinates = args
-    try:
-        with Image.open(image_path) as img:
-            cropped_image = np.array(img.crop(coordinates))
-            Image.fromarray(cropped_image).save(output_path)
-        print(f"Image '{os.path.basename(image_path)}' cropped.")
+
+    if os.path.basename(image_path).endswith("00.png"):  # Skip if the name of the pic is 00.png - e.g. the cover
+        shutil.copyfile(image_path, output_path)
+        print(f"Image '{os.path.basename(image_path)}' copied.")
         return True
-    except Exception as e:
-        print(f"Error cropping '{os.path.basename(image_path)}': {e}")
-        return False
+
+    else:
+        try:
+            with Image.open(image_path) as img:
+                cropped_image = np.array(img.crop(coordinates))
+                Image.fromarray(cropped_image).save(output_path)
+                print(f"Image '{os.path.basename(image_path)}' cropped.")
+                return True
+
+        except Exception as e:
+            print(f"Error cropping '{os.path.basename(image_path)}': {e}")
+            return False
 
 
 def crop_images(input_folder: str, size: int):
@@ -49,6 +58,7 @@ def crop_images(input_folder: str, size: int):
             print(f"\nAll pictures have been cropped and saved to folder '{output_folder}'.\n")
 
         return all_successful, output_folder
+
     else:
         print(f"\nNo Files in '{input_folder}'.\n")
         return False, None

@@ -12,9 +12,10 @@ from src.helper.initBooks import init_books
 from src.helper.bookDataBase import remove_book_from_db
 
 
-def process_book_images(book_url: str, name: str, drv: webdriver.Edge, i: int, total: int) -> bool:
+def process_book_images(book_url: str, name: str, cover: str, drv: webdriver.Edge, i: int, total: int) -> bool:
     """
     For each book, handles the processing in a predefined sequence.
+    :param cover: The URL for the book
     :param book_url: The URL to the book to be processed
     :param name: The name of the book, used also for archive name
     :param drv: Driver object
@@ -25,7 +26,7 @@ def process_book_images(book_url: str, name: str, drv: webdriver.Edge, i: int, t
     output_folder = ''
 
     steps = [
-        ("Capturing book pages", lambda: get_book_pages(book_url=book_url, driver=drv)),
+        ("Capturing book pages", lambda: get_book_pages(book_url=book_url, cover=cover, driver=drv)),
         ("Cropping images", lambda: crop_images(input_folder=output_folder, size=size)),
         ("Sharpening images", lambda: sharpen_images_in_folder(input_folder=output_folder)),
         ("Compressing images", lambda: compress_pictures(input_folder=output_folder)),
@@ -85,8 +86,8 @@ def main() -> None:
             return
 
         for index, book in enumerate(book_list, start=1):
-            title, url = book['title'], book['href']
-            finished = process_book_images(book_url=url, name=title, drv=driver, i=index, total=len(book_list))
+            title, url, cover = book['title'], book['href'], book['cover']
+            finished = process_book_images(book_url=url, name=title, cover=cover, drv=driver, i=index, total=len(book_list))
 
             if not finished:
                 print(f"\nBook processing terminated for book: '{title}'")

@@ -1,4 +1,5 @@
 import re
+import time
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.common.by import By
@@ -85,6 +86,7 @@ def login_sap_press(email: str, passwd: str, driver: webdriver.Edge, max_retries
 
         except LoginFailedError as e:
             print(e)
+            time.sleep(2)
 
             if attempt == max_retries:
                 return False
@@ -109,12 +111,15 @@ def get_book_list_from_web(driver: webdriver.Edge) -> tuple[bool, None] | tuple[
     try:
         product_details = WebDriverWait(driver, 10).until(
             ec.presence_of_all_elements_located((By.CLASS_NAME, "product-detail")))
+        cover_details = WebDriverWait(driver, 10).until(
+            ec.presence_of_all_elements_located((By.CLASS_NAME, "product-cover")))
 
-        for product_detail in product_details:
+        for product_detail, cover_detail in zip(product_details, cover_details):
             title_element = product_detail.find_element(By.CLASS_NAME, "titel")
             title = re.sub(r"[/\\:*?\"<>|]", '', title_element.text.strip())
             href = title_element.find_element(By.CSS_SELECTOR, "a.read-link").get_attribute('href')
-            insert_book_in_db(title=title, href=href)
+            cover = cover_detail.find_element(By.CLASS_NAME, "cover").get_attribute('src').replace("_171_", "_800_").replace(".jpg", ".png")
+            insert_book_in_db(title=title, href=href, cover=cover)
             print(f"Book: '{title}' added to list.")
 
         result_list = get_book_list_from_db()
