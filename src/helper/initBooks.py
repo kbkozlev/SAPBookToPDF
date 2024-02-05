@@ -27,7 +27,7 @@ def init_books(e_mail: str, passwd: str, driver: webdriver.Edge) -> tuple[bool, 
         book_list_db = get_books_db(driver=driver)
         if len(book_list_db) > 0:  # if the db has books use those y/n
             for book in book_list_db:
-                print(f"Book: '{book['title']}' in current list")
+                print(f"Book: '{book['title']}'")
 
             cont = input(f"\n{Color.yellow(f'[ #{len(book_list_db)} ] books found in db, continue: y/n? ')}")
             if cont.strip().lower() in ["y", ""]:
@@ -129,7 +129,7 @@ def get_book_list_from_web(driver: webdriver.Edge, max_tries: int = 1) -> tuple[
             href = title_element.find_element(By.CSS_SELECTOR, "a.read-link").get_attribute('href')
             cover = cover_detail.find_element(By.CLASS_NAME, "cover").get_attribute('src').replace("_171_", "_800_").replace(".jpg", ".png")
             insert_book_in_db(title=title, href=href, cover=cover)
-            print(f"Book: '{title}' added to list.")
+            print(f"Book: '{title}'")
 
         result_list = get_book_list_from_db()
         return True, result_list
