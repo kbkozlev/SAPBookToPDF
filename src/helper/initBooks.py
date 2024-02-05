@@ -23,22 +23,27 @@ def init_books(e_mail: str, passwd: str, driver: webdriver.Edge) -> tuple[bool, 
     logged_in = login_sap_press(email=e_mail, passwd=passwd, driver=driver)
 
     if logged_in:
-        success, book_list_db = get_books_db(driver=driver)
+        book_list_db = get_books_db(driver=driver)
         if len(book_list_db) > 0:  # if the db has books use those y/n
             for book in book_list_db:
                 print(f"Book: '{book['title']}' in current list")
 
             cont = input(f"\n[ #{len(book_list_db)} ] books found in db, continue: y/n? ")
             if cont.strip().lower() in ["y", ""]:
-                return success, book_list_db
+                return True, book_list_db
 
-            elif cont.strip().lower() in ["n"]:
+            elif cont.strip().lower() == 'n':
                 save = input(f"Do you want to save the current database and exit, or fetch a new one? s/f? ")
-                if save.strip().lower() in ["s", ""]:
+
+                if save.strip().lower() != 'f':
                     print("\nExiting...")
                     return False, None
 
+            else:
+                return False, None
+
         success, book_list = get_book_list_from_web(driver=driver)  # else fetch the books from the website
+
         if len(book_list) == 0:
             print("\nNo Books found!")
             return False, None
@@ -46,8 +51,10 @@ def init_books(e_mail: str, passwd: str, driver: webdriver.Edge) -> tuple[bool, 
         cont = input(f"\n[ #{len(book_list)} ] books found online, continue: y/n? ")
         if cont.strip().lower() in ["y", ""]:
             return success, book_list if success else (False, None)
+
         else:
             print("\nExiting...")
+
     return False, None
 
 
@@ -71,12 +78,12 @@ def login_sap_press(email: str, passwd: str, driver: webdriver.Edge, max_retries
 
             # Waits for the 'login failed' page to appear; raises TimeoutException if it doesn't
             try:
-                WebDriverWait(driver, 10).until(
+                WebDriverWait(driver, 5).until(
                     ec.presence_of_element_located((By.XPATH, '//*[@id="login-input"]/div[1]')))
                 raise LoginFailedError("Login failed!")
 
             except TimeoutException:
-                # If no TimeoutException is raised, it means the login was successful
+                # If TimeoutException is raised, it means the login was successful
                 print("\nLogged in successfully!\n")
                 return True
 
@@ -133,7 +140,7 @@ def get_book_list_from_web(driver: webdriver.Edge) -> tuple[bool, None] | tuple[
             return False, result_list
 
 
-def get_books_db(driver: webdriver.Edge) -> tuple[bool, list]:
+def get_books_db(driver: webdriver.Edge) -> list:
     """
     Without this function the code will not work, otherwise makes no sense - MAGIC!\n
     I managed to track the issue down to the driver having to be called again
@@ -142,4 +149,4 @@ def get_books_db(driver: webdriver.Edge) -> tuple[bool, list]:
     """
     driver.get("https://library.sap-press.com/library/")
     res = get_book_list_from_db()
-    return True, res
+    return res

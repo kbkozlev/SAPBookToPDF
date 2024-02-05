@@ -75,6 +75,7 @@ def main() -> None:
     :return:
     """
     all_present, login_data = is_present()
+
     if not all_present:
         return
 

@@ -51,6 +51,7 @@ def get_book_pages(book_url: str, cover: str, driver: webdriver.Edge, page_nr: i
         pass
 
     time.sleep(2)
+
     try:
         # Change size of book page to 4
         WebDriverWait(driver, 10).until(
@@ -75,6 +76,7 @@ def get_book_pages(book_url: str, cover: str, driver: webdriver.Edge, page_nr: i
                     (By.XPATH, '/html/body/div[5]/div/div/div[4]/div[1]/div[1]/ul/li[8]/a[2]/span')))
 
             time.sleep(4)  # timer to wait for the full loading of the page (adjust based on internet quality)
+            
             image_name = f"{str(page_nr).zfill(2)}.png"
             driver.save_screenshot(f'{output_folder}/{image_name}')
             print(f"Image: '{image_name}' saved.")
