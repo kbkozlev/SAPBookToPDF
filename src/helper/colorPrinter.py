@@ -15,7 +15,7 @@ class Color:
         CYAN = '\033[96m'
 
     @classmethod
-    def red(cls, text):
+    def red(cls, text: str) -> str:
         """
         Print text in red color.
 
@@ -25,7 +25,7 @@ class Color:
         return cls.C.RED + text + cls.C.RESET
 
     @classmethod
-    def green(cls, text):
+    def green(cls, text: str) -> str:
         """
         Print text in green color.
 
@@ -35,7 +35,7 @@ class Color:
         return cls.C.GREEN + text + cls.C.RESET
 
     @classmethod
-    def yellow(cls, text):
+    def yellow(cls, text: str) -> str:
         """
         Print text in yellow color.
 
@@ -45,7 +45,7 @@ class Color:
         return cls.C.YELLOW + text + cls.C.RESET
 
     @classmethod
-    def blue(cls, text):
+    def blue(cls, text: str) -> str:
         """
         Print text in blue color.
 
@@ -55,7 +55,7 @@ class Color:
         return cls.C.BLUE + text + cls.C.RESET
 
     @classmethod
-    def purple(cls, text):
+    def purple(cls, text: str) -> str:
         """
         Print text in purple color.
 
@@ -65,7 +65,7 @@ class Color:
         return cls.C.PURPLE + text + cls.C.RESET
 
     @classmethod
-    def cyan(cls, text):
+    def cyan(cls, text: str) -> str:
         """
         Print text in cyan color.
 
