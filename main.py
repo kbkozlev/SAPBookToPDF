@@ -9,6 +9,7 @@ from src.helper.initDriver import init_driver
 from src.helper.initBooks import init_books
 from src.helper.bookDataBase import remove_book_from_db
 from src.helper.removeDir import remove_directories
+from src.helper.colorPrinter import Color
 
 
 def process_book_images(book_url: str, name: str, cover: str, drv: webdriver.Edge, i: int, total: int) -> bool:
@@ -32,7 +33,7 @@ def process_book_images(book_url: str, name: str, cover: str, drv: webdriver.Edg
         ("Creating backup", lambda: create_backup(input_folder=output_folder, out_name=name)),
     ]
 
-    print(f"\nBook [ {i} | {total} ]: '{name}' started processing.")
+    print(f"\nBook [ {i} | {total} ]: '{name}' started processing.\n")
 
     for step_name, step_function in steps:
         if step_name == 'Capturing book pages':
@@ -41,12 +42,12 @@ def process_book_images(book_url: str, name: str, cover: str, drv: webdriver.Edg
             ok, output_folder = step_function()
 
         if not ok:
-            print(f"\nStep '{step_name}': failed.")
+            print(f"""\n{Color.red(f"Step '{step_name}': failed.")}""")
             return False
 
     remove_directories()
     remove_book_from_db(title=name)
-    print(f"\nBook [ {i} | {total} ]: '{name}' finished processing.")
+    print(f"""\n{Color.green(f"Book [ {i} | {total} ]: '{name}' finished processing.")}""")
     return True
 
 
@@ -74,10 +75,10 @@ def main() -> None:
             finished = process_book_images(book_url=url, name=title, cover=cover, drv=driver, i=index, total=len(book_list))
 
             if not finished:
-                print(f"\nBook processing terminated for book: '{title}'")
+                print(f"""\n{Color.red(f"Book processing terminated for book: '{title}'")}""")
                 return
 
-        print("\nAll Books were processed successfully!")
+        print(f"\n{Color.green('All Books were processed successfully!')}")
 
 
 if __name__ == '__main__':

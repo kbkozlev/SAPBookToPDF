@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 import shutil
 from concurrent.futures import ProcessPoolExecutor
+from src.helper.colorPrinter import Color
 
 
 def __sharpen_image(args: tuple):
@@ -26,16 +27,16 @@ def __sharpen_image(args: tuple):
             if not success:
                 # If unable to save, copy the original image instead
                 shutil.copyfile(input_path, output_path)
-                print(f"\nUnable to save processed image '{os.path.basename(input_path)}'. Copied original instead.")
+                print(f"""\n{Color.red(f"Unable to save processed image '{os.path.basename(input_path)}'. Copied original instead.")}""")
             else:
                 print(f"Image '{os.path.basename(input_path)}' sharpened.")
         else:
-            raise FileNotFoundError(f"\nUnable to read '{os.path.basename(input_path)}'. The image file may be missing or corrupted.")
+            raise FileNotFoundError(f"""\n{Color.red(f"Unable to read '{os.path.basename(input_path)}'. The image file may be missing or corrupted.")}""")
 
         return True
 
     except Exception as e:
-        print(f"\nUnexpected error: {e}")
+        print(f"\n{Color.red(f'Unexpected error: {e}')}")
         return False
 
 
@@ -61,10 +62,10 @@ def sharpen_images_in_folder(input_folder: str) -> tuple[bool, str] | tuple[bool
 
         all_successful = all(results)
         if all_successful:
-            print(f"\nAll pictures have been sharpened and saved to folder '{output_folder}'.\n")
+            print(f"""\n{Color.green(f"All pictures have been sharpened and saved to folder '{output_folder}'.")}\n""")
 
         return all_successful, output_folder
 
     except Exception as e:
-        print(f"\nUnexpected error: {e}")
+        print(f"\n{Color.red(f'Unexpected error: {e}')}")
         return False, None

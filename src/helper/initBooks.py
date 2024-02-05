@@ -7,6 +7,7 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 from src.helper.customExceptions import LoginFailedError
 from src.helper.bookDataBase import insert_book_in_db, get_book_list_from_db, create_db
+from src.helper.colorPrinter import Color
 
 
 def init_books(e_mail: str, passwd: str, driver: webdriver.Edge) -> tuple[bool, list] | tuple[bool, None]:
@@ -28,15 +29,15 @@ def init_books(e_mail: str, passwd: str, driver: webdriver.Edge) -> tuple[bool, 
             for book in book_list_db:
                 print(f"Book: '{book['title']}' in current list")
 
-            cont = input(f"\n[ #{len(book_list_db)} ] books found in db, continue: y/n? ")
+            cont = input(f"\n{Color.yellow(f'[ #{len(book_list_db)} ] books found in db, continue: y/n? ')}")
             if cont.strip().lower() in ["y", ""]:
                 return True, book_list_db
 
             elif cont.strip().lower() == 'n':
-                save = input(f"Do you want to save the current database and exit, or fetch a new one? s/f? ")
+                save = input(f"{Color.yellow('Do you want to save the current database and exit, or fetch a new one? s/f?')}")
 
                 if save.strip().lower() != 'f':
-                    print("\nExiting...")
+                    print(f"\n{Color.red('Exiting...')}")
                     return False, None
 
             else:
@@ -45,15 +46,15 @@ def init_books(e_mail: str, passwd: str, driver: webdriver.Edge) -> tuple[bool, 
         success, book_list = get_book_list_from_web(driver=driver)  # else fetch the books from the website
 
         if len(book_list) == 0:
-            print("\nNo Books found!")
+            print(f"\n{Color.red('No Books found!')}")
             return False, None
 
-        cont = input(f"\n[ #{len(book_list)} ] books found online, continue: y/n? ")
+        cont = input(f"\n{Color.yellow(f'[ #{len(book_list)} ] books found online, continue: y/n? ')}")
         if cont.strip().lower() in ["y", ""]:
             return success, book_list if success else (False, None)
 
         else:
-            print("\nExiting...")
+            print(f"\n{Color.red('Exiting...')}")
 
     return False, None
 
@@ -69,7 +70,7 @@ def login_sap_press(email: str, passwd: str, driver: webdriver.Edge, max_retries
     """
     for attempt in range(1, max_retries + 1):
         try:
-            print(f"Logging in (Attempt {attempt}/{max_retries})...")
+            print(f"{Color.yellow(f'Logging in (Attempt {attempt}/{max_retries})...')}")
 
             driver.get("https://www.sap-press.com/accounts/login/?next=/")
             driver.find_element(By.ID, "id_login-username").send_keys(email)
@@ -84,22 +85,22 @@ def login_sap_press(email: str, passwd: str, driver: webdriver.Edge, max_retries
 
             except TimeoutException:
                 # If TimeoutException is raised, it means the login was successful
-                print("\nLogged in successfully!\n")
+                print(f"\n{Color.green('Logged in successfully!')}\n")
                 return True
 
         except NoSuchElementException as e:
             failed_element = e.msg
-            print(f"Login failed - {failed_element}\n")
+            print(f"{Color.red(f'Login failed - {failed_element}')}\n")
 
         except LoginFailedError as e:
-            print(e)
+            print(f"{Color.red(f'{e}')}")
             time.sleep(2)
 
             if attempt == max_retries:
                 return False
 
         except Exception as e:
-            print(f"Login failed - Unexpected error: {e}")
+            print(f"{Color.red(f'Login failed - Unexpected error: {e}')}")
 
     return False
 

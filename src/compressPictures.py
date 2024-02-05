@@ -2,6 +2,7 @@ import os
 import shutil
 from PIL import Image, UnidentifiedImageError
 from concurrent.futures import ProcessPoolExecutor
+from src.helper.colorPrinter import Color
 
 
 def __compress_picture(path_tuple: tuple):
@@ -16,10 +17,13 @@ def __compress_picture(path_tuple: tuple):
             img.convert("RGB").save(output_path, 'JPEG', optimize=True)
             print(f"Image '{os.path.basename(input_path)}' compressed.")
     except UnidentifiedImageError as uie:
-        print(f"Failed to compress image '{os.path.basename(input_path)}' due to UnidentifiedImageError: {uie}\nCopying original!")
+        print(f"""{Color.red(f"Failed to compress image '{os.path.basename(input_path)}' due to UnidentifiedImageError: {uie}")}""")
+        print(f"{Color.red('Copying original!')}")
+
         shutil.copyfile(input_path, output_path)
     except Exception as e:
-        print(f"Failed to compress image '{os.path.basename(input_path)}' with an unexpected error: {e}\nCopying original!")
+        print(f"""{Color.red(f"Failed to compress image '{os.path.basename(input_path)}' with an unexpected error: {e}")}""")
+        print(f"{Color.red(f'Copying original!')}")
         shutil.copyfile(input_path, output_path)
 
 
@@ -41,5 +45,5 @@ def compress_pictures(input_folder: str) -> tuple[bool, str]:
         input_output_paths = [(os.path.join(input_folder, filename), os.path.join(output_folder, filename)) for filename in files]
         executor.map(__compress_picture, input_output_paths)
 
-    print(f'\nAll pictures have been compressed and saved to folder {output_folder}\n')
+    print(f"\n{Color.green('All pictures have been compressed and saved to folder {output_folder}')}\n")
     return True, output_folder

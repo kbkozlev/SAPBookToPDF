@@ -1,5 +1,6 @@
 import os
 import shutil
+from src.helper.colorPrinter import Color
 
 
 def remove_directories() -> None:
@@ -13,6 +14,7 @@ def remove_directories() -> None:
         if os.path.isdir(dir_full_path):
             try:
                 shutil.rmtree(dir_full_path)
-                print(f"Directory '{dir_entry}' successfully removed.")
+                print(f"""{Color.green(f"Directory '{dir_entry}' successfully removed.")}""")
+
             except OSError as e:
-                print(f"\nError: {dir_entry} : {e.strerror}")
+                print(f"\n{Color.red(f'Error: {dir_entry} : {e.strerror}')}")

@@ -1,5 +1,6 @@
 import py7zr
 import os
+from src.helper.colorPrinter import Color
 
 
 def create_backup(input_folder: str, out_name: str) -> tuple[bool, str] | tuple[bool, None]:
@@ -12,7 +13,7 @@ def create_backup(input_folder: str, out_name: str) -> tuple[bool, str] | tuple[
 
     try:
         if not os.path.exists(input_folder):
-            print(f"\nFolder '{input_folder}' does not exist.")
+            print(f"""\n{Color.red("Folder '{input_folder}' does not exist.")}""")
             return False, None
 
         output_name = f"files/{out_name}.7z"
@@ -29,12 +30,12 @@ def create_backup(input_folder: str, out_name: str) -> tuple[bool, str] | tuple[
                     archive.write(file_path, os.path.relpath(file_path, input_folder))
                     print(f"Image '{file}' archived")
 
-            print(f"\nFolder '{input_folder}' successfully archived to '{output_name}'.\n")
+            print(f"""\n{Color.green("Folder '{input_folder}' successfully archived to '{output_name}'.")}\n""")
             return True, input_folder
 
         else:
-            raise FileNotFoundError(f"\nNo Files in '{input_folder}', nothing to archive.")
+            raise FileNotFoundError(f"""\n{Color.red("No Files in '{input_folder}', nothing to archive.")}""")
 
     except Exception as e:
-        print(f"\nUnexpected error: {e}")
+        print(f"\n{Color.red(f'Unexpected error: {e}')}")
         return False, None

@@ -9,6 +9,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from src.helper.identicalImages import are_images_identical
 from src.helper.customExceptions import IdenticalImageError
 from src.helper.removeDir import remove_directories
+from src.helper.colorPrinter import Color
 
 
 def get_book_pages(book_url: str, cover: str, driver: webdriver.Edge, page_nr: int = 1, max_tries: int = 1) -> tuple[bool, None, None] | tuple[bool, str, int]:
@@ -30,7 +31,7 @@ def get_book_pages(book_url: str, cover: str, driver: webdriver.Edge, page_nr: i
         os.makedirs(output_folder, exist_ok=True)
 
         try:
-            print('\nNavigating to book...\n')
+            print(f"{Color.yellow('Navigating to book...')}\n")
             #  Open book url
             driver.get(book_url)
 
@@ -43,10 +44,10 @@ def get_book_pages(book_url: str, cover: str, driver: webdriver.Edge, page_nr: i
                 print(f"Image: '{cover_name}' saved.")
 
         except Exception as e:
-            print(f"Error: {e}")
+            print(f"{Color.red(f'Error: {e}')}")
 
     else:
-        print(f"\nFailed to load the book page. Received status code: {book_response.status_code}")
+        print(f"\n{Color.red(f'Failed to load the book page. Received status code: {book_response.status_code}')}")
         return False, None, None
 
     try:
@@ -97,7 +98,7 @@ def get_book_pages(book_url: str, cover: str, driver: webdriver.Edge, page_nr: i
             driver.execute_script("arguments[0].click();", element)
 
     except TimeoutException:
-        print(f"\nReached the last page, all pictures have been saved to folder '{output_folder}'.\n")
+        print(f"""\n{Color.green(f"Reached the last page, all pictures have been saved to folder '{output_folder}'.")}\n""")
         return True, output_folder, size
 
     except IdenticalImageError as e:
@@ -105,10 +106,10 @@ def get_book_pages(book_url: str, cover: str, driver: webdriver.Edge, page_nr: i
             return False, None, None
 
         else:
-            print(f"\nError: {e} retrying.\n")
+            print(f"\n{Color.red(f'Error: {e} retrying.')}\n")
             remove_directories()
             return get_book_pages(book_url=book_url, cover=cover, driver=driver, max_tries=max_tries + 1)
 
     except Exception as e:
-        print(f"\nError: {e}")
+        print(f"\n{Color.red(f'Error: {e}')}")
         return False, None, None

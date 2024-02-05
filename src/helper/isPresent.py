@@ -1,4 +1,5 @@
 from src.helper.createIniFile import create_ini_file, get_credentials
+from src.helper.colorPrinter import Color
 
 
 def is_present() -> tuple[bool, list] | tuple[bool, None]:
@@ -14,7 +15,7 @@ def is_present() -> tuple[bool, list] | tuple[bool, None]:
     if not email or not password:
         for arg_name, arg_value in {'E-mail': email, 'Password': password}.items():
             if not arg_value:
-                print(f"{arg_name}: is empty.")
+                print(f"{Color.red(f'{arg_name}: is empty.')}")
         return False, None
 
     return True, [email, password]
