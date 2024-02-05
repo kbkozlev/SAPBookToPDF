@@ -1,5 +1,3 @@
-import os
-import shutil
 from selenium import webdriver
 from src.cropPictures import crop_images
 from src.createBackup import create_backup
@@ -10,6 +8,7 @@ from src.helper.isPresent import is_present
 from src.helper.initDriver import init_driver
 from src.helper.initBooks import init_books
 from src.helper.bookDataBase import remove_book_from_db
+from src.helper.removeDir import remove_directories
 
 
 def process_book_images(book_url: str, name: str, cover: str, drv: webdriver.Edge, i: int, total: int) -> bool:
@@ -49,22 +48,6 @@ def process_book_images(book_url: str, name: str, cover: str, drv: webdriver.Edg
     remove_book_from_db(title=name)
     print(f"\nBook [ {i} | {total} ]: '{name}' finished processing.")
     return True
-
-
-def remove_directories() -> None:
-    """
-    Handles the cleanup of the directories used for the processing of the images
-    :return:
-    """
-    for dir_entry in os.listdir('files'):
-        dir_full_path = os.path.join('files', dir_entry)
-
-        if os.path.isdir(dir_full_path):
-            try:
-                shutil.rmtree(dir_full_path)
-                print(f"Directory '{dir_entry}' successfully removed.")
-            except OSError as e:
-                print(f"\nError: {dir_entry} : {e.strerror}")
 
 
 def main() -> None:

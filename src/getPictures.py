@@ -6,6 +6,9 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
+from src.helper.identicalImages import are_images_identical
+from src.helper.customExceptions import IdenticalImageError
+from src.helper.removeDir import remove_directories
 
 
 def get_book_pages(book_url: str, cover: str, driver: webdriver.Edge, page_nr: int = 1) -> tuple[bool, None, None] | tuple[bool, str, int]:
@@ -18,6 +21,7 @@ def get_book_pages(book_url: str, cover: str, driver: webdriver.Edge, page_nr: i
     :return:
     """
     output_folder = 'files/1.rawPictures'
+    downloaded_images = []
     size = 0
 
     book_response = requests.get(book_url)
@@ -70,6 +74,12 @@ def get_book_pages(book_url: str, cover: str, driver: webdriver.Edge, page_nr: i
 
     try:
         while True:
+
+            if len(downloaded_images) >= 2:
+                identical = are_images_identical(image_path1=downloaded_images[-2], image_path2=downloaded_images[-1])
+                if identical:
+                    raise IdenticalImageError
+
             # Find next page button
             element = WebDriverWait(driver, 5).until(
                 ec.visibility_of_element_located(
@@ -79,6 +89,7 @@ def get_book_pages(book_url: str, cover: str, driver: webdriver.Edge, page_nr: i
             
             image_name = f"{str(page_nr).zfill(2)}.png"
             driver.save_screenshot(f'{output_folder}/{image_name}')
+            downloaded_images.append(f'{output_folder}/{image_name}')
             print(f"Image: '{image_name}' saved.")
             page_nr += 1
             # Click next-page button
@@ -87,6 +98,11 @@ def get_book_pages(book_url: str, cover: str, driver: webdriver.Edge, page_nr: i
     except TimeoutException:
         print(f"\nReached the last page, all pictures have been saved to folder '{output_folder}'.\n")
         return True, output_folder, size
+
+    except IdenticalImageError:
+        print("\nFetching images failed, retrying.")
+        remove_directories()
+        get_book_pages(book_url=book_url, cover=cover, driver=driver)
 
     except Exception as e:
         print(f"\nError: {e}")
