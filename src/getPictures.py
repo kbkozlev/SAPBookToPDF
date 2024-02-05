@@ -76,7 +76,7 @@ def get_book_pages(book_url: str, cover: str, driver: webdriver.Edge, page_nr: i
         while True:
 
             if len(downloaded_images) >= 2:
-                identical = are_images_identical(image_path1=downloaded_images[-2], image_path2=downloaded_images[-1])
+                identical = are_images_identical(image1=downloaded_images[-2], image2=downloaded_images[-1])
                 if identical:
                     raise IdenticalImageError
 
