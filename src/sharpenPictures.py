@@ -14,7 +14,7 @@ def __sharpen_image(args: list) -> bool:
     """
     input_path, output_path = args
 
-    if os.path.basename(input_path).endswith("00.png"):  # Skip if the name of the pic is 00.png - e.g. the cover
+    if os.path.basename(input_path) == "00.png":  # Skip if the name of the pic is 00.png - e.g. the cover
         shutil.copyfile(input_path, output_path)
         print(f"Image '{os.path.basename(input_path)}' copied.")
         return True

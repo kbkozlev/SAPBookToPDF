@@ -9,7 +9,7 @@ from src.helper.colorPrinter import Color
 def __crop_image(args: list) -> bool:
     image_path, output_path, coordinates = args
 
-    if os.path.basename(image_path).endswith("00.png"):  # Skip if the name of the pic is 00.png - e.g. the cover
+    if os.path.basename(image_path) == "00.png":  # Skip if the name of the pic is 00.png - e.g. the cover
         shutil.copyfile(image_path, output_path)
         print(f"Image '{os.path.basename(image_path)}' copied.")
         return True
