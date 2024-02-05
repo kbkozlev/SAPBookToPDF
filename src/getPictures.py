@@ -11,9 +11,10 @@ from src.helper.customExceptions import IdenticalImageError
 from src.helper.removeDir import remove_directories
 
 
-def get_book_pages(book_url: str, cover: str, driver: webdriver.Edge, page_nr: int = 1) -> tuple[bool, None, None] | tuple[bool, str, int]:
+def get_book_pages(book_url: str, cover: str, driver: webdriver.Edge, page_nr: int = 1, max_tries: int = 1) -> tuple[bool, None, None] | tuple[bool, str, int]:
     """
     Creates a screenshot of every page of a book
+    :param max_tries:
     :param cover: The url for the cover of the book
     :param book_url: The URL of the book to be processed
     :param driver: Driver object
@@ -99,10 +100,14 @@ def get_book_pages(book_url: str, cover: str, driver: webdriver.Edge, page_nr: i
         print(f"\nReached the last page, all pictures have been saved to folder '{output_folder}'.\n")
         return True, output_folder, size
 
-    except IdenticalImageError:
-        print("\nFetching images failed, retrying.")
-        remove_directories()
-        get_book_pages(book_url=book_url, cover=cover, driver=driver)
+    except IdenticalImageError as e:
+        if max_tries == 3:
+            return False, None, None
+
+        else:
+            print(f"\nError: {e} retrying.\n")
+            remove_directories()
+            return get_book_pages(book_url=book_url, cover=cover, driver=driver, max_tries=max_tries + 1)
 
     except Exception as e:
         print(f"\nError: {e}")

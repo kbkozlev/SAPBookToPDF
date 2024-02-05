@@ -104,10 +104,11 @@ def login_sap_press(email: str, passwd: str, driver: webdriver.Edge, max_retries
     return False
 
 
-def get_book_list_from_web(driver: webdriver.Edge) -> tuple[bool, None] | tuple[bool, list]:
+def get_book_list_from_web(driver: webdriver.Edge, max_tries: int = 1) -> tuple[bool, None] | tuple[bool, list]:
     """
     For all elements with class "product-detail" in the page,
     it fetches the "name" and "href" element and stores them in a list of dictionaries
+    :param max_tries:
     :param driver: Driver object
     :return:
     """
@@ -133,11 +134,15 @@ def get_book_list_from_web(driver: webdriver.Edge) -> tuple[bool, None] | tuple[
         return True, result_list
 
     except TimeoutException:
-        try:
-            get_book_list_from_web(driver=driver)
-        except NoSuchElementException as e:
-            print(e.msg)
+        if max_tries == 3:
             return False, result_list
+
+        else:
+            return get_book_list_from_web(driver=driver, max_tries=max_tries + 1)
+
+    except NoSuchElementException as e:
+        print(e.msg)
+        return False, result_list
 
 
 def get_books_db(driver: webdriver.Edge) -> list:
