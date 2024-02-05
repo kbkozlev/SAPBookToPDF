@@ -52,5 +52,5 @@ def compress_pictures(input_folder: str) -> tuple[bool, str]:
         input_output_paths = [(os.path.join(input_folder, filename), os.path.join(output_folder, filename)) for filename in files]
         executor.map(__compress_picture, input_output_paths)
 
-    print(f"\n{Color.green('All pictures have been compressed and saved to folder {output_folder}')}\n")
+    print(f"\n{Color.green(f'All pictures have been compressed and saved to folder {output_folder}')}\n")
     return True, output_folder
