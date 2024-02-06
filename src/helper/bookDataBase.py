@@ -58,7 +58,7 @@ def remove_book_from_db(title: str):
     data = __load_data()
     updated_data = [book for book in data if book['title'] != title]
     __save_data(updated_data)
-    print(Color.yellow(f"\nBook: '{title}' removed from db."))
+    print(Color.cyan(f"\nBook: '{title}' removed from db."))
 
 
 def get_book_list_from_db() -> list:
