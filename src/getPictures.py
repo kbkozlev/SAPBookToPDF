@@ -26,11 +26,12 @@ def get_book_pages(book_url: str, cover: str, driver: webdriver.Edge, page_nr: i
     downloaded_images = []
     size = 0
 
-    book_response = requests.get(book_url)
-    if book_response.status_code == 200:
-        os.makedirs(output_folder, exist_ok=True)
+    try:
+        book_response = requests.get(book_url)
 
-        try:
+        if book_response.status_code == 200:
+            os.makedirs(output_folder, exist_ok=True)
+
             print(f"{Color.yellow('Navigating to book...')}\n")
             #  Open book url
             driver.get(book_url)
@@ -43,12 +44,19 @@ def get_book_pages(book_url: str, cover: str, driver: webdriver.Edge, page_nr: i
                     file.write(cover_response.content)
                 print(f"Image: '{cover_name}' saved.")
 
-        except Exception as e:
-            print(f"{Color.red(f'Error: {e}')}")
+        else:
+            print(f"\n{Color.red(f'Failed to load the book page. Received status code: {book_response.status_code}')}")
+            return False, None, None
 
-    else:
-        print(f"\n{Color.red(f'Failed to load the book page. Received status code: {book_response.status_code}')}")
-        return False, None, None
+    except Exception as e:
+        if max_tries == 3:
+            print(f"\n{Color.red(f'Failed to load the book page.')}")
+            return False, None, None
+
+        else:
+            print(f"\n{Color.red(f'Error: {e} retrying.')}\n")
+            remove_directories()
+            return get_book_pages(book_url=book_url, cover=cover, driver=driver, max_tries=max_tries + 1)
 
     try:
         # decline last read page, and start from the beginning
