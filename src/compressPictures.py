@@ -20,6 +20,7 @@ def __compress_picture(args: list):
     else:
         try:
             with Image.open(input_path) as img:
+                output_path = os.path.splitext(output_path)[0] + ".jpg"  # Use the .jpg extension
                 img.convert("RGB").save(output_path, 'JPEG', optimize=True)
                 print(f"Image '{os.path.basename(input_path)}' compressed.")
 
