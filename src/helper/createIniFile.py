@@ -1,6 +1,6 @@
 import os
 import configparser
-from src.helper.colorPrinter import Color
+from advancedprinter import print
 
 file_path = 'src/helper/files/info.ini'
 
@@ -19,7 +19,7 @@ def create_ini_file() -> bool:
 
         with open(file_path, 'w') as configfile:
             config.write(configfile)
-        print(Color.green("INI file with empty credentials created successfully."))
+        print("INI file with empty credentials created successfully.", c='green2')
         return False
     return True
 
@@ -39,8 +39,8 @@ def get_credentials() -> tuple[str, str] | tuple[None, None]:
             password = credentials.get('Password')
             return email, password
 
-        print(Color.red("No 'Credentials' section found in the INI file."))
+        print("No 'Credentials' section found in the INI file.", c='red')
         return None, None
 
-    print(Color.red("INI file 'info.ini' does not exist."))
+    print("INI file 'info.ini' does not exist.", c='red')
     return None, None

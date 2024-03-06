@@ -3,6 +3,5 @@ Pillow~=10.2.0
 py7zr~=0.20.8
 Requests~=2.31.0
 selenium~=4.17.2
-webdriver_manager~=4.0.1
-ImageHash~=4.3.1
 opencv-python~=4.9.0.80
+AdvancedPrinter~=1.2.0

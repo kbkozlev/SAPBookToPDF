@@ -3,7 +3,7 @@ import shutil
 import numpy as np
 from PIL import Image
 from concurrent.futures import ProcessPoolExecutor
-from src.helper.colorPrinter import Color
+from advancedprinter import print
 
 
 def __crop_image(args: list) -> bool:
@@ -23,7 +23,7 @@ def __crop_image(args: list) -> bool:
                 return True
 
         except Exception as e:
-            print(f"""{Color.red(f"Error cropping '{os.path.basename(image_path)}': {e}")}""")
+            print(f"Error cropping '{os.path.basename(image_path)}': {e}", c='red')
             return False
 
 
@@ -56,10 +56,10 @@ def crop_images(input_folder: str, size: int):
 
         all_successful = all(results)
         if all_successful:
-            print(f"""\n{Color.green(f"All pictures have been cropped and saved to folder '{output_folder}'.")}\n""")
+            print(f"\nAll pictures have been cropped and saved to folder '{output_folder}'.\n", c='green2')
 
         return all_successful, output_folder
 
     else:
-        print(f"""\n{Color.red(f"No Files in '{input_folder}'.")}\n""")
+        print(f"\nNo Files in '{input_folder}'.\n", c='red')
         return False, None

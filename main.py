@@ -9,7 +9,7 @@ from src.helper.initDriver import init_driver
 from src.helper.initBooks import init_books
 from src.helper.bookDataBase import remove_book_from_db
 from src.helper.removeDir import remove_directories
-from src.helper.colorPrinter import Color
+from advancedprinter import print
 
 
 def process_book_images(book_url: str, name: str, cover: str, drv: webdriver.Edge, i: int, total: int) -> bool:
@@ -33,7 +33,7 @@ def process_book_images(book_url: str, name: str, cover: str, drv: webdriver.Edg
         ("Creating backup", lambda: create_backup(input_folder=output_folder, out_name=name)),
     ]
 
-    print(f"""\n{Color.blue(f"Book [ {i} | {total} ]: '{name}' started processing.")}\n""")
+    print(f"\nBook [ {i} | {total} ]: '{name}' started processing.\n", c="blue")
 
     for step_name, step_function in steps:
         if step_name == 'Capturing book pages':
@@ -42,12 +42,12 @@ def process_book_images(book_url: str, name: str, cover: str, drv: webdriver.Edg
             ok, output_folder = step_function()
 
         if not ok:
-            print(f"""\n{Color.red(f"Step '{step_name}': failed.")}""")
+            print(f"Step '{step_name}': failed.", c='red')
             return False
 
     remove_directories()
     remove_book_from_db(title=name)
-    print(f"""\n{Color.green(f"Book [ {i} | {total} ]: '{name}' finished processing.")}""")
+    print(f"Book [ {i} | {total} ]: '{name}' finished processing.", c='green2')
     print(f"\n===============================================================================================")
     return True
 
@@ -76,10 +76,10 @@ def main() -> None:
             finished = process_book_images(book_url=url, name=title, cover=cover, drv=driver, i=index, total=len(book_list))
 
             if not finished:
-                print(f"""\n{Color.red(f"Book processing terminated for book: '{title}'")}""")
+                print(f"Book processing terminated for book: '{title}'", c='red')
                 return
 
-        print(f"\n{Color.green('All Books were processed successfully!')}")
+        print(f"All Books were processed successfully!", c='green2')
 
 
 if __name__ == '__main__':
